@@ -5,10 +5,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by siyugu on 1/17/16.
- */
 // TODO: make sure this is thread-safe
 public class EventDB {
   private static final String TAG = "EventDB";

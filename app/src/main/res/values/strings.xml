@@ -104,26 +104,14 @@
 
     <string name="insert_photo_btn">Insert Photo</string>
 
-    <string-array name="type_of_work_options">
-        <item>club</item>
-        <item>meeting</item>
-        <item>homework</item>
-        <item>project</item>
-        <item>class</item>
-        <item>personal</item>
-    </string-array>
+    <string name="take_photo_menuitem">Take Photo</string>
+    <string name="choose_from_libray_menuitem">Choose from Library</string>
+    <string name="cancel_menuitem">Cancel</string>
 
-    <string-array name="warning_time_options">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hours</item>
-        <item>2 hours</item>
-    </string-array>
-
-    <string-array name="repeat_options">
-        <item>Daily</item>
-        <item>Weekday</item>
-        <item>Weekend</item>
+    <string-array name="insert_photo_menus">
+        <item>@string/take_photo_menuitem</item>
+        <item>@string/choose_from_libray_menuitem</item>
+        <item>@string/cancel_menuitem</item>
     </string-array>
 
     <string name="add_event_text">Add</string>

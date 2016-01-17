@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -43,6 +44,11 @@ public class TestListView extends AppCompatActivity {
   private NumberPicker mMinutePermittedPicker;
   private ImageButton mInsertPhotoBtn;
   private ImageView mPhotoAdded;
+  private EditText mDescriptionText;
+  private EditText mDueDateText;
+  private EditText mDoDateText;
+  private EditText mStartTimeText;
+
   private EventDB events;
 
   @Override
@@ -50,7 +56,29 @@ public class TestListView extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_test_list_view);
 
+    events = EventDB.getInstance();
+
+    initializeUiFields();
+    initializeSpinners();
+    initializeNumberPicker();
+  }
+
+  // Call before other initializing methods
+  private void initializeUiFields() {
     mTypeOfWorkSpinner = (Spinner) findViewById(R.id.type_of_work_selector);
+    mWarningTimeSpinner = (Spinner) findViewById(R.id.warning_time_selector);
+    mRepeatSpinner = (Spinner) findViewById(R.id.repeat_selector);
+    mHourPermittedPicker = (NumberPicker) findViewById(R.id.hour_permitted_picker);
+    mMinutePermittedPicker = (NumberPicker) findViewById(R.id.minute_permitted_picker);
+    mPhotoAdded = (ImageView) findViewById(R.id.photo_added);
+    mInsertPhotoBtn = (ImageButton) findViewById(R.id.add_photo_btn);
+    mDescriptionText = (EditText) findViewById(R.id.editDescription);
+    mDueDateText = (EditText) findViewById(R.id.edit_due_date);
+    mDoDateText = (EditText) findViewById(R.id.edit_do_date);
+    mStartTimeText = (EditText) findViewById(R.id.edit_start_time);
+  }
+
+  private void initializeSpinners() {
     ArrayAdapter<Event.TypeOfWork> typeOfWorkAdaptor =
         new ArrayAdapter<Event.TypeOfWork>(
             this,
@@ -59,7 +87,6 @@ public class TestListView extends AppCompatActivity {
     typeOfWorkAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mTypeOfWorkSpinner.setAdapter(typeOfWorkAdaptor);
 
-    mWarningTimeSpinner = (Spinner) findViewById(R.id.warning_time_selector);
     ArrayAdapter<Event.WarningTime> warningTimeAdaptor =
         new ArrayAdapter<Event.WarningTime>(
             this,
@@ -68,7 +95,6 @@ public class TestListView extends AppCompatActivity {
     warningTimeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mWarningTimeSpinner.setAdapter(warningTimeAdaptor);
 
-    mRepeatSpinner = (Spinner) findViewById(R.id.repeat_selector);
     ArrayAdapter<Event.RepeatPattern> repeatAdaptor =
         new ArrayAdapter<Event.RepeatPattern>(
             this,
@@ -76,15 +102,11 @@ public class TestListView extends AppCompatActivity {
             Event.RepeatPattern.values());
     repeatAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mRepeatSpinner.setAdapter(repeatAdaptor);
-
-    initializeNumberPicker();
-    events = EventDB.getInstance();
   }
 
   private void initializeNumberPicker() {
     int min = 0;
     int max = 24;
-    mHourPermittedPicker = (NumberPicker) findViewById(R.id.hour_permitted_picker);
     mHourPermittedPicker.setMinValue(min);
     mHourPermittedPicker.setMaxValue(max);
     String[] values = new String[max - min + 1];
@@ -95,7 +117,6 @@ public class TestListView extends AppCompatActivity {
 
     min = 0;
     max = 59;
-    mMinutePermittedPicker = (NumberPicker) findViewById(R.id.minute_permitted_picker);
     mMinutePermittedPicker.setMinValue(min);
     mMinutePermittedPicker.setMaxValue(max);
     values = new String[max - min + 1];
@@ -103,30 +124,20 @@ public class TestListView extends AppCompatActivity {
       values[i - min] = (i - min) + " min";
     }
     mMinutePermittedPicker.setDisplayedValues(values);
-
-    mPhotoAdded = (ImageView) findViewById(R.id.photo_added);
-    mInsertPhotoBtn = (ImageButton) findViewById(R.id.add_photo_btn);
-    mInsertPhotoBtn.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        selectImage();
-      }
-    });
   }
 
-  private void selectImage() {
-    final CharSequence[] items = {"Take Photo", "Choose from Library",
-        "Cancel"};
+  public void selectImage(View view) {
+    final CharSequence[] items = getResources().getStringArray(R.array.insert_photo_menus);
 
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("Insert Photo");
+    builder.setTitle(R.string.insert_photo_btn);
     builder.setItems(items, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int item) {
-        if (items[item].equals("Take Photo")) {
+        if (items[item].equals(getResources().getString(R.string.take_photo_menuitem))) {
           Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
           startActivityForResult(intent, CAMERA_REQUEST);
-        } else if (items[item].equals("Choose from Library")) {
+        } else if (items[item].equals(getResources().getString(R.string.choose_from_libray_menuitem))) {
           Intent intent = new Intent(
               Intent.ACTION_PICK,
               android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -134,7 +145,7 @@ public class TestListView extends AppCompatActivity {
           startActivityForResult(
               Intent.createChooser(intent, "Select File"),
               CHOOSE_IMAGE_REQUEST);
-        } else if (items[item].equals("Cancel")) {
+        } else if (items[item].equals(getResources().getString(R.string.cancel_menuitem))) {
           dialog.dismiss();
         }
       }
@@ -160,8 +171,9 @@ public class TestListView extends AppCompatActivity {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 
-    File destination = new File(Environment.getExternalStorageDirectory(),
+    File destination = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
         System.currentTimeMillis() + ".jpg");
+    Log.d(TAG, "photo saved to: " + destination);
 
     FileOutputStream fo;
     try {
@@ -169,6 +181,17 @@ public class TestListView extends AppCompatActivity {
       fo = new FileOutputStream(destination);
       fo.write(bytes.toByteArray());
       fo.close();
+
+      // Tell the media scanner about the new file so that it is
+      // immediately available to the user.
+      MediaScannerConnection.scanFile(this,
+          new String[]{destination.toString()}, null,
+          new MediaScannerConnection.OnScanCompletedListener() {
+            public void onScanCompleted(String path, Uri uri) {
+              Log.i("ExternalStorage", "Scanned " + path + ":");
+              Log.i("ExternalStorage", "-> uri=" + uri);
+            }
+          });
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -185,6 +208,7 @@ public class TestListView extends AppCompatActivity {
     cursor.moveToFirst();
 
     String selectedImagePath = cursor.getString(column_index);
+    Log.d(TAG, "photo selected: " + selectedImagePath);
 
     Bitmap bm;
     BitmapFactory.Options options = new BitmapFactory.Options();
@@ -237,9 +261,18 @@ public class TestListView extends AppCompatActivity {
   }
 
   public void onAddEventBtnClick(View view) {
-    EditText description = (EditText) TestListView.this.findViewById(R.id.editDescription);
-    String value = description.getText().toString();
-    Event e = new Event(value);
+    Event e = new Event(
+        (Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem(),
+        mDescriptionText.getText().toString(),
+        mDueDateText.getText().toString(),
+        mDoDateText.getText().toString(),
+        "filepath",  // TODO: get file path
+        mStartTimeText.getText().toString(),
+        mHourPermittedPicker.getValue(),
+        mMinutePermittedPicker.getValue(),
+        (Event.WarningTime) mWarningTimeSpinner.getSelectedItem(),
+        (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
+    );
     events.addEvent(e);
   }
 

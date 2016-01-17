@@ -9,13 +9,9 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 public class TimePickerFragment extends DialogFragment
     implements TimePickerDialog.OnTimeSetListener {
-  private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormat.forPattern("hh:mm a");
-
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     // Use the current time as the default values for the picker
@@ -28,7 +24,7 @@ public class TimePickerFragment extends DialogFragment
     String timeText = timePicked.getText().toString();
     if (timeText != null && timeText.isEmpty() == false) {
       try {
-        LocalTime parsedTime = DATETIME_FORMATTER.parseLocalTime(timeText);
+        LocalTime parsedTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(timeText);
         hour = parsedTime.getHourOfDay();
         minute = parsedTime.getMinuteOfHour();
       } catch (IllegalArgumentException e) {
@@ -45,6 +41,6 @@ public class TimePickerFragment extends DialogFragment
     int id = getArguments().getInt(BundleKeys.VIEW_ID_KEY);
     EditText timePicked = (EditText) getActivity().findViewById(id);
     LocalTime current = new LocalTime(hourOfDay, minute);
-    timePicked.setText(DATETIME_FORMATTER.print(current));
+    timePicked.setText(TimeUtil.LOCALTIME_FORMATTER.print(current));
   }
 }

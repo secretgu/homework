@@ -8,34 +8,30 @@ import android.text.format.DateFormat;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-/**
- * Created by siyugu on 1/10/16.
- */
 public class TimePickerFragment extends DialogFragment
     implements TimePickerDialog.OnTimeSetListener {
-  private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm a");
+  private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormat.forPattern("hh:mm a");
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     // Use the current time as the default values for the picker
-    final Calendar c = Calendar.getInstance();
-    int hour = c.get(Calendar.HOUR_OF_DAY);
-    int minute = c.get(Calendar.MINUTE);
+    LocalTime current = new LocalTime();
+    int hour = current.getHourOfDay();
+    int minute = current.getMinuteOfHour();
 
     int id = getArguments().getInt(BundleKeys.VIEW_ID_KEY);
     EditText timePicked = (EditText) getActivity().findViewById(id);
     String timeText = timePicked.getText().toString();
     if (timeText != null && timeText.isEmpty() == false) {
       try {
-        Date parsedDate = TIME_FORMAT.parse(timeText);
-        hour = parsedDate.getHours();
-        minute = parsedDate.getMinutes();
-      } catch (ParseException pe) {
+        LocalTime parsedTime = DATETIME_FORMATTER.parseLocalTime(timeText);
+        hour = parsedTime.getHourOfDay();
+        minute = parsedTime.getMinuteOfHour();
+      } catch (IllegalArgumentException e) {
         // use default value when parse fails
       }
     }
@@ -48,9 +44,7 @@ public class TimePickerFragment extends DialogFragment
   public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
     int id = getArguments().getInt(BundleKeys.VIEW_ID_KEY);
     EditText timePicked = (EditText) getActivity().findViewById(id);
-    Calendar cal = Calendar.getInstance();
-    cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-    cal.set(Calendar.MINUTE, minute);
-    timePicked.setText(TIME_FORMAT.format(cal.getTime()));
+    LocalTime current = new LocalTime(hourOfDay, minute);
+    timePicked.setText(DATETIME_FORMATTER.print(current));
   }
 }

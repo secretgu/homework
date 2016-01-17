@@ -7,36 +7,32 @@ import android.os.Bundle;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-/**
- * Created by siyugu on 1/10/16.
- */
 public class DatePickerFragment extends DialogFragment
     implements DatePickerDialog.OnDateSetListener {
-  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
+  private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormat.forPattern("yyyy/MM/dd");
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     // Use the current date as the default date in the picker
-    final Calendar c = Calendar.getInstance();
-    int year = c.get(Calendar.YEAR);
-    int month = c.get(Calendar.MONTH);
-    int day = c.get(Calendar.DAY_OF_MONTH);
+    LocalDate current = new LocalDate();
+    int year = current.getYear();
+    int month = MonthUtil.jodaMonthToJavaMonth(current.getMonthOfYear());
+    int day = current.getDayOfMonth();
 
     int id = getArguments().getInt(BundleKeys.VIEW_ID_KEY);
     EditText datePicked = (EditText) getActivity().findViewById(id);
     String dateText = datePicked.getText().toString();
     if (dateText != null && dateText.isEmpty() == false) {
       try {
-        Date parsedDate = DATE_FORMAT.parse(dateText);
-        year = parsedDate.getYear() + 1900;  // FIXME(siyugu): don't use java.util.Date
-        month = parsedDate.getMonth();
-        day = parsedDate.getDate();
-      } catch (ParseException pe) {
+        LocalDate parsedDate = DATETIME_FORMATTER.parseLocalDate(dateText);
+        year = parsedDate.getYear();
+        month = MonthUtil.jodaMonthToJavaMonth(parsedDate.getMonthOfYear());
+        day = parsedDate.getDayOfMonth();
+      } catch (IllegalArgumentException e) {
         // use default value when parse fails
       }
     }
@@ -48,8 +44,7 @@ public class DatePickerFragment extends DialogFragment
   public void onDateSet(DatePicker view, int year, int month, int day) {
     int id = getArguments().getInt(BundleKeys.VIEW_ID_KEY);
     EditText datePicked = (EditText) getActivity().findViewById(id);
-    Calendar cal = Calendar.getInstance();
-    cal.set(year, month, day);
-    datePicked.setText(DATE_FORMAT.format(cal.getTime()));
+    LocalDate current = new LocalDate(year, MonthUtil.javaMonthToJodaMonth(month), day);
+    datePicked.setText(DATETIME_FORMATTER.print(current));
   }
 }

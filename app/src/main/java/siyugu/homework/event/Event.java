@@ -4,9 +4,6 @@ import android.support.annotation.VisibleForTesting;
 
 import java.util.Date;
 
-/**
- * Created by siyugu on 1/17/16.
- */
 public class Event {
   private String value;
 

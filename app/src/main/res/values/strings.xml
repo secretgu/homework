@@ -112,4 +112,20 @@
         <item>class</item>
         <item>personal</item>
     </string-array>
+
+    <string-array name="warning_time_options">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hours</item>
+        <item>2 hours</item>
+    </string-array>
+
+    <string-array name="repeat_options">
+        <item>Daily</item>
+        <item>Weekday</item>
+        <item>Weekend</item>
+    </string-array>
+
+    <string name="add_event_text">Add</string>
+    <string name="cancel_add_text">Cancel</string>
 </resources>

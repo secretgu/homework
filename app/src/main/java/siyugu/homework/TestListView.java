@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -26,6 +27,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import siyugu.homework.event.Event;
+import siyugu.homework.event.EventDB;
+
 public class TestListView extends AppCompatActivity {
   private static final String TAG = "TestListView";
 
@@ -33,10 +37,13 @@ public class TestListView extends AppCompatActivity {
   private static final int CAMERA_REQUEST = 2;
 
   private Spinner mTypeOfWorkSpinner;
+  private Spinner mWarningTimeSpinner;
+  private Spinner mRepeatSpinner;
   private NumberPicker mHourPermittedPicker;
   private NumberPicker mMinutePermittedPicker;
   private ImageButton mInsertPhotoBtn;
   private ImageView mPhotoAdded;
+  private EventDB events;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +51,34 @@ public class TestListView extends AppCompatActivity {
     setContentView(R.layout.activity_test_list_view);
 
     mTypeOfWorkSpinner = (Spinner) findViewById(R.id.type_of_work_selector);
-    ArrayAdapter<CharSequence> typeOfWorkAdaptor = ArrayAdapter.createFromResource(
-        this, R.array.type_of_work_options, android.R.layout.simple_spinner_item);
+    ArrayAdapter<Event.TypeOfWork> typeOfWorkAdaptor =
+        new ArrayAdapter<Event.TypeOfWork>(
+            this,
+            android.R.layout.simple_spinner_item,
+            Event.TypeOfWork.values());
     typeOfWorkAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mTypeOfWorkSpinner.setAdapter(typeOfWorkAdaptor);
 
+    mWarningTimeSpinner = (Spinner) findViewById(R.id.warning_time_selector);
+    ArrayAdapter<Event.WarningTime> warningTimeAdaptor =
+        new ArrayAdapter<Event.WarningTime>(
+            this,
+            android.R.layout.simple_spinner_item,
+            Event.WarningTime.values());
+    warningTimeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    mWarningTimeSpinner.setAdapter(warningTimeAdaptor);
+
+    mRepeatSpinner = (Spinner) findViewById(R.id.repeat_selector);
+    ArrayAdapter<Event.RepeatPattern> repeatAdaptor =
+        new ArrayAdapter<Event.RepeatPattern>(
+            this,
+            android.R.layout.simple_spinner_item,
+            Event.RepeatPattern.values());
+    repeatAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    mRepeatSpinner.setAdapter(repeatAdaptor);
+
     initializeNumberPicker();
+    events = EventDB.getInstance();
   }
 
   private void initializeNumberPicker() {
@@ -205,5 +234,16 @@ public class TestListView extends AppCompatActivity {
     }
     newFragment.setArguments(fragmentData);
     newFragment.show(getFragmentManager(), fragmentData.getString(BundleKeys.FRAGMENT_TAG));
+  }
+
+  public void onAddEventBtnClick(View view) {
+    EditText description = (EditText) TestListView.this.findViewById(R.id.editDescription);
+    String value = description.getText().toString();
+    Event e = new Event(value);
+    events.addEvent(e);
+  }
+
+  public void onCancelBtnClick(View view) {
+    events.printAllEvents();
   }
 }

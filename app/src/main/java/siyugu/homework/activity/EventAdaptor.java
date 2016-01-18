@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.util.List;
+
 import siyugu.homework.R;
 import siyugu.homework.event.Event;
 import siyugu.homework.util.TimeUtil;
@@ -17,9 +19,9 @@ import siyugu.homework.util.TimeUtil;
 public class EventAdaptor extends ArrayAdapter<Event> {
   private final Context context;
   private final int layoutResourceId;
-  private final Event[] data;
+  private final List<Event> data;
 
-  public EventAdaptor(Context context, int layoutResourceId, Event[] data) {
+  public EventAdaptor(Context context, int layoutResourceId, List<Event> data) {
     super(context, layoutResourceId, data);
 
     this.context = context;
@@ -29,7 +31,7 @@ public class EventAdaptor extends ArrayAdapter<Event> {
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    Log.e("EventAdaptor", "getView called for position " + position);
+    Log.d("EventAdaptor", "getView called for position " + position);
     View view = convertView;
 
     if (view == null) {
@@ -46,7 +48,7 @@ public class EventAdaptor extends ArrayAdapter<Event> {
 
     // fill data
     ViewHolder holder = (ViewHolder) view.getTag();
-    Event e = data[position];
+    Event e = data.get(position);
     holder.mEventTypeText.setText(e.getTypeOfWork().toString());
     holder.mDescriptionText.setText(e.getDescription());
     holder.mDescriptionText.setChecked(e.getCompleted());

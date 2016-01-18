@@ -67,7 +67,7 @@ public class EventDB {
       if (duration.getStandardDays() != 0) {
         throw new java.lang.AssertionError("Not same day?");
       }
-      return duration.getStandardHours() >= 0 && duration.getStandardHours() <= NOW_WITHIN_HOURS;
+      return duration.getStandardHours() >= 0 && duration.getStandardHours() < NOW_WITHIN_HOURS;
     }
   }
 
@@ -84,8 +84,8 @@ public class EventDB {
     }
   }
 
-  // TODO: make the API follow flow pattern
-  public synchronized List<Event> getTodayEvents() {
+  // TODO: make the API follow flow pattern, if easy to do.
+  private synchronized List<Event> getTodayEvents() {
     List<Event> todayEvents = new ArrayList<Event>();
     Predicate<Event> predicate = new TodayEventsPredicate();
     for (Event e : allEvents) {
@@ -96,25 +96,27 @@ public class EventDB {
     return ImmutableList.copyOf(todayEvents);
   }
 
-  public static List<Event> getNowEvents(List<Event> todayEvents) {
+  public List<Event> getNowEvents() {
+    List<Event> todayEvents = getTodayEvents();
     List<Event> nowEvents = new ArrayList<Event>();
-    Predicate<Event> predicate = new NowEventsPredicate();
+    Predicate<Event> nowPredicate = new NowEventsPredicate();
     for (Event e : todayEvents) {
-      if (predicate.apply(e)) {
+      if (nowPredicate.apply(e)) {
         nowEvents.add(e);
       }
     }
-    return ImmutableList.copyOf(nowEvents);
+    return nowEvents;
   }
 
-  public static List<Event> getUpcomingEvents(List<Event> todayEvents) {
+  public List<Event> getUpcomingEvents() {
+    List<Event> todayEvents = getTodayEvents();
     List<Event> upcomingEvents = new ArrayList<Event>();
-    Predicate<Event> predicate = new UpcomingEventsPredicate();
+    Predicate<Event> upComingPredicate = new UpcomingEventsPredicate();
     for (Event e : todayEvents) {
-      if (predicate.apply(e)) {
+      if (upComingPredicate.apply(e)) {
         upcomingEvents.add(e);
       }
     }
-    return ImmutableList.copyOf(upcomingEvents);
+    return upcomingEvents;
   }
 }

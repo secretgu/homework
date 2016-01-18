@@ -27,7 +27,7 @@ public class ExampleUnitTest {
     assertTrue(predicate.isNowEvent(currentTime, currentTime.minusHours(0)));
     assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(0)));
     assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(2)));
-    assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(4)));
+    assertFalse(predicate.isNowEvent(currentTime, currentTime.plusHours(4)));
     assertFalse(predicate.isNowEvent(currentTime, currentTime.plusHours(5)));
   }
 

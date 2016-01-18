@@ -1,5 +1,6 @@
 package siyugu.homework.event;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,5 +29,15 @@ public class ExampleUnitTest {
     assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(2)));
     assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(4)));
     assertFalse(predicate.isNowEvent(currentTime, currentTime.plusHours(5)));
+  }
+
+  @Test
+  public void testTodayEventsPredicate() throws Exception {
+    EventDB.TodayEventsPredicate predicate = new EventDB.TodayEventsPredicate();
+    LocalDate today = new LocalDate();
+
+    assertTrue(predicate.isTodayEvent(today, today.minusDays(0)));
+    assertFalse(predicate.isTodayEvent(today, today.minusDays(1)));
+    assertFalse(predicate.isTodayEvent(today, today.plusDays(1)));
   }
 }

@@ -6,7 +6,7 @@ import android.util.Log;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
-import org.joda.time.DateTimeComparator;
+import org.joda.time.Days;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -42,16 +42,15 @@ public class EventDB {
 
   public final static class TodayEventsPredicate implements Predicate<Event> {
     public boolean apply(Event event) {
-      LocalDate today = new LocalDate();
-      LocalDate eventDoDate = event.getDoDate();
+      return isTodayEvent(new LocalDate(), event.getDoDate());
+    }
+
+    @VisibleForTesting
+    boolean isTodayEvent(LocalDate today, LocalDate eventDoDate) {
       if (eventDoDate == null) {
         return false;
       }
-      DateTimeComparator cmp = DateTimeComparator.getDateOnlyInstance();
-      if (cmp.compare(today, eventDoDate) == 0) {
-        return true;
-      }
-      return false;
+      return Days.daysBetween(today, eventDoDate) == Days.ZERO;
     }
   }
 
@@ -59,9 +58,7 @@ public class EventDB {
 
   public final static class NowEventsPredicate implements Predicate<Event> {
     public boolean apply(Event event) {
-      LocalTime currentTime = new LocalTime();
-      LocalTime eventStartTime = event.getStartTime();
-      return isNowEvent(currentTime, eventStartTime);
+      return isNowEvent(new LocalTime(), event.getStartTime());
     }
 
     @VisibleForTesting

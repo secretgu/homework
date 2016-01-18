@@ -3,6 +3,7 @@ package siyugu.homework.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -51,14 +52,14 @@ public class EditModeActivity extends AppCompatActivity {
   private EditText mStartTimeText;
   private String mCurrentPhotoPath;
 
-  private EventDB events;
+  private EventDB eventDB;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.edit_mode_view);
 
-    events = EventDB.getInstance();
+    eventDB = EventDB.getInstance();
     mCurrentPhotoPath = null;
 
     initializeUiFields();
@@ -208,6 +209,20 @@ public class EditModeActivity extends AppCompatActivity {
     showImage();
   }
 
+  private void onSelectFromGalleryResult(Intent data) {
+    Uri selectedImageUri = data.getData();
+    String[] projection = {MediaStore.MediaColumns.DATA};
+    CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null, null);
+    Cursor cursor = cursorLoader.loadInBackground();
+    int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+    cursor.moveToFirst();
+
+    mCurrentPhotoPath = cursor.getString(column_index);
+    Log.d(TAG, "photo selected: " + mCurrentPhotoPath);
+
+    showImage();
+  }
+
   private void showImage() {
     if (mCurrentPhotoPath == null) {
       Log.e(TAG, "no photo chosen");
@@ -228,20 +243,6 @@ public class EditModeActivity extends AppCompatActivity {
     bm = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
 
     mPhotoAdded.setImageBitmap(bm);
-  }
-
-  private void onSelectFromGalleryResult(Intent data) {
-    Uri selectedImageUri = data.getData();
-    String[] projection = {MediaStore.MediaColumns.DATA};
-    Cursor cursor = managedQuery(selectedImageUri, projection, null, null,
-        null);
-    int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-    cursor.moveToFirst();
-
-    mCurrentPhotoPath = cursor.getString(column_index);
-    Log.d(TAG, "photo selected: " + mCurrentPhotoPath);
-
-    showImage();
   }
 
   public void showDateTimePickerDialog(View view) {
@@ -291,10 +292,13 @@ public class EditModeActivity extends AppCompatActivity {
         (Event.WarningTime) mWarningTimeSpinner.getSelectedItem(),
         (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
     );
-    events.addEvent(e);
+    eventDB.addEvent(e);
   }
 
   public void onCancelBtnClick(View view) {
-    events.printAllEvents();
+    eventDB.printAllEvents();
+
+    // back to main activity
+    finish();
   }
 }

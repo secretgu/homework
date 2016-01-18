@@ -1,5 +1,7 @@
 package siyugu.homework.event;
 
+import android.support.annotation.Nullable;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
@@ -8,13 +10,18 @@ import siyugu.homework.util.TimeUtil;
 
 public class Event {
   private TypeOfWork typeOfWork;
+  @Nullable
   private String description;
+  @Nullable
   private LocalDate dueDate;
   private LocalDate doDate;
+  @Nullable
   private String picturePath;
   private LocalTime startTime;
   private Period permittedTime;
+  @Nullable
   private WarningTime warningTime;
+  @Nullable
   private RepeatPattern repeatPattern;
 
   public enum TypeOfWork {
@@ -72,6 +79,46 @@ public class Event {
     private String text;
   }
 
+  /*================Getter and Setter (start)================*/
+
+  public TypeOfWork getTypeOfWork() {
+    return typeOfWork;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public LocalDate getDueDate() {
+    return dueDate;
+  }
+
+  public LocalDate getDoDate() {
+    return doDate;
+  }
+
+  public String getPicturePath() {
+    return picturePath;
+  }
+
+  public LocalTime getStartTime() {
+    return startTime;
+  }
+
+  public Period getPermittedTime() {
+    return permittedTime;
+  }
+
+  public WarningTime getWarningTime() {
+    return warningTime;
+  }
+
+  public RepeatPattern getRepeatPattern() {
+    return repeatPattern;
+  }
+
+  /*================Getter and Setter (end)================*/
+
   // TODO: make sure fields have appropriate default values
   public Event(
       TypeOfWork typeOfWork,
@@ -87,6 +134,7 @@ public class Event {
   ) {
     this.typeOfWork = typeOfWork;
     this.description = description;
+    // TODO: exception handling
     this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDate);
     this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDate);
     this.picturePath = picturePath;
@@ -98,6 +146,6 @@ public class Event {
 
   @Override
   public String toString() {
-    return "";
+    return description;
   }
 }

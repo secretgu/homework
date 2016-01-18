@@ -32,7 +32,7 @@ import siyugu.homework.event.EventDB;
 import siyugu.homework.util.BundleKeys;
 
 // TODO: Sometimes app throws exception on objects being freed, probably due to not implementing onPause/onResuse
-public class TestListView extends AppCompatActivity {
+public class EditModeActivity extends AppCompatActivity {
   private static final String TAG = "TestListView";
 
   private static final int CHOOSE_IMAGE_REQUEST = 1;
@@ -56,7 +56,7 @@ public class TestListView extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_test_list_view);
+    setContentView(R.layout.edit_mode_view);
 
     events = EventDB.getInstance();
     mCurrentPhotoPath = null;

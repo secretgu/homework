@@ -2,6 +2,8 @@ package siyugu.homework.event;
 
 import android.support.annotation.Nullable;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
@@ -23,6 +25,8 @@ public class Event {
   private WarningTime warningTime;
   @Nullable
   private RepeatPattern repeatPattern;
+
+  private boolean completed;
 
   public enum TypeOfWork {
     CLUB("club"),
@@ -117,6 +121,14 @@ public class Event {
     return repeatPattern;
   }
 
+  public boolean getCompleted() {
+    return completed;
+  }
+
+  public void setCompleted(boolean completed) {
+    this.completed = completed;
+  }
+
   /*================Getter and Setter (end)================*/
 
   // TODO: make sure fields have appropriate default values
@@ -142,6 +154,23 @@ public class Event {
     this.permittedTime = new Period(permittedHour, permittedMinute, 0 /* seconds */, 0 /* millis */);
     this.warningTime = warningTime;
     this.repeatPattern = repeatPattern;
+    this.completed = false;
+  }
+
+  @VisibleForTesting
+  public Event(
+      TypeOfWork typeOfWork,
+      String description,
+      String doDate,
+      String startTime,
+      int permittedHour,
+      int permittedMinute) {
+    this.typeOfWork = typeOfWork;
+    this.description = description;
+    this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDate);
+    this.startTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(startTime);
+    this.permittedTime = new Period(permittedHour, permittedMinute, 0 /* seconds */, 0 /* millis */);
+    this.completed = false;
   }
 
   @Override

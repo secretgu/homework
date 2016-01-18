@@ -1,8 +1,8 @@
 package siyugu.homework.event;
 
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
@@ -78,6 +78,13 @@ public class EventDB {
     }
   }
 
+  public final static class IncompleteEventsPredicate implements Predicate<Event> {
+    public boolean apply(Event event) {
+      return !event.getCompleted();
+    }
+  }
+
+  // TODO: make the API follow flow pattern
   public synchronized List<Event> getTodayEvents() {
     List<Event> todayEvents = new ArrayList<Event>();
     Predicate<Event> predicate = new TodayEventsPredicate();

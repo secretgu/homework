@@ -293,6 +293,9 @@ public class EditModeActivity extends AppCompatActivity {
         (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
     );
     eventDB.addEvent(e);
+
+    // back to main activity
+    finish();
   }
 
   public void onCancelBtnClick(View view) {

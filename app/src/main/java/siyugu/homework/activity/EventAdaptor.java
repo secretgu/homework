@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import siyugu.homework.R;
@@ -38,7 +38,7 @@ public class EventAdaptor extends ArrayAdapter<Event> {
 
       ViewHolder viewHolder = new ViewHolder();
       viewHolder.mEventTypeText = (TextView) view.findViewById(R.id.event_type_item);
-      viewHolder.mDescriptionText = (CheckedTextView) view.findViewById(R.id.event_description_item);
+      viewHolder.mDescriptionText = (CheckBox) view.findViewById(R.id.event_description_item);
       viewHolder.mStartTimeText = (TextView) view.findViewById(R.id.start_time_text_item);
       viewHolder.mTimePermittedText = (TextView) view.findViewById(R.id.time_permitted_text_item);
       view.setTag(viewHolder);
@@ -61,7 +61,7 @@ public class EventAdaptor extends ArrayAdapter<Event> {
 
   static class ViewHolder {
     public TextView mEventTypeText;
-    public CheckedTextView mDescriptionText;
+    public CheckBox mDescriptionText;
     public TextView mStartTimeText;
     public TextView mTimePermittedText;
   }

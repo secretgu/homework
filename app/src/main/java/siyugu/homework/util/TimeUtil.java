@@ -1,4 +1,4 @@
-package siyugu.homework;
+package siyugu.homework.util;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

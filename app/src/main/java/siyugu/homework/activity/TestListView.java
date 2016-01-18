@@ -1,4 +1,4 @@
-package siyugu.homework;
+package siyugu.homework.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,14 +23,15 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
+import siyugu.homework.R;
 import siyugu.homework.event.Event;
 import siyugu.homework.event.EventDB;
+import siyugu.homework.util.BundleKeys;
 
+// TODO: Sometimes app throws exception on objects being freed, probably due to not implementing onPause/onResuse
 public class TestListView extends AppCompatActivity {
   private static final String TAG = "TestListView";
 
@@ -48,6 +49,7 @@ public class TestListView extends AppCompatActivity {
   private EditText mDueDateText;
   private EditText mDoDateText;
   private EditText mStartTimeText;
+  private String mCurrentPhotoPath;
 
   private EventDB events;
 
@@ -57,6 +59,7 @@ public class TestListView extends AppCompatActivity {
     setContentView(R.layout.activity_test_list_view);
 
     events = EventDB.getInstance();
+    mCurrentPhotoPath = null;
 
     initializeUiFields();
     initializeSpinners();
@@ -136,7 +139,21 @@ public class TestListView extends AppCompatActivity {
       public void onClick(DialogInterface dialog, int item) {
         if (items[item].equals(getResources().getString(R.string.take_photo_menuitem))) {
           Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-          startActivityForResult(intent, CAMERA_REQUEST);
+          if (intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+              photoFile = createImageFile();
+            } catch (IOException ex) {
+              // Error occurred while creating the File
+              Log.e(TAG, "Error occurred while creating the File", ex);
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+              intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                  Uri.fromFile(photoFile));
+              startActivityForResult(intent, CAMERA_REQUEST);
+            }
+          }
         } else if (items[item].equals(getResources().getString(R.string.choose_from_libray_menuitem))) {
           Intent intent = new Intent(
               Intent.ACTION_PICK,
@@ -153,6 +170,17 @@ public class TestListView extends AppCompatActivity {
     builder.show();
   }
 
+  private File createImageFile() throws IOException {
+    String imageFileName = "HOMEWORK_" + System.currentTimeMillis() + ".jpg";
+    File storageDir = Environment.getExternalStoragePublicDirectory(
+        Environment.DIRECTORY_PICTURES);
+    File image = new File(storageDir, imageFileName);
+    image.createNewFile();
+
+    mCurrentPhotoPath = image.getAbsolutePath();
+    return image;
+  }
+
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -167,36 +195,39 @@ public class TestListView extends AppCompatActivity {
   }
 
   private void onCaptureImageResult(Intent data) {
-    Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+    Log.d(TAG, "photo saved to: " + mCurrentPhotoPath);
 
-    File destination = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-        System.currentTimeMillis() + ".jpg");
-    Log.d(TAG, "photo saved to: " + destination);
+    MediaScannerConnection.scanFile(this,
+        new String[]{mCurrentPhotoPath}, null,
+        new MediaScannerConnection.OnScanCompletedListener() {
+          public void onScanCompleted(String path, Uri uri) {
+            Log.i("ExternalStorage", "Scanned " + path + ":");
+            Log.i("ExternalStorage", "-> uri=" + uri);
+          }
+        });
+    showImage();
+  }
 
-    FileOutputStream fo;
-    try {
-      destination.createNewFile();
-      fo = new FileOutputStream(destination);
-      fo.write(bytes.toByteArray());
-      fo.close();
-
-      // Tell the media scanner about the new file so that it is
-      // immediately available to the user.
-      MediaScannerConnection.scanFile(this,
-          new String[]{destination.toString()}, null,
-          new MediaScannerConnection.OnScanCompletedListener() {
-            public void onScanCompleted(String path, Uri uri) {
-              Log.i("ExternalStorage", "Scanned " + path + ":");
-              Log.i("ExternalStorage", "-> uri=" + uri);
-            }
-          });
-    } catch (IOException e) {
-      e.printStackTrace();
+  private void showImage() {
+    if (mCurrentPhotoPath == null) {
+      Log.e(TAG, "no photo chosen");
+      return;
     }
 
-    mPhotoAdded.setImageBitmap(thumbnail);
+    Bitmap bm;
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(mCurrentPhotoPath, options);
+    final int REQUIRED_SIZE = 200;
+    int scale = 1;
+    while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+      scale *= 2;
+    options.inSampleSize = scale;
+    options.inJustDecodeBounds = false;
+    bm = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
+
+    mPhotoAdded.setImageBitmap(bm);
   }
 
   private void onSelectFromGalleryResult(Intent data) {
@@ -207,23 +238,10 @@ public class TestListView extends AppCompatActivity {
     int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
     cursor.moveToFirst();
 
-    String selectedImagePath = cursor.getString(column_index);
-    Log.d(TAG, "photo selected: " + selectedImagePath);
+    mCurrentPhotoPath = cursor.getString(column_index);
+    Log.d(TAG, "photo selected: " + mCurrentPhotoPath);
 
-    Bitmap bm;
-    BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inJustDecodeBounds = true;
-    BitmapFactory.decodeFile(selectedImagePath, options);
-    final int REQUIRED_SIZE = 200;
-    int scale = 1;
-    while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-      scale *= 2;
-    options.inSampleSize = scale;
-    options.inJustDecodeBounds = false;
-    bm = BitmapFactory.decodeFile(selectedImagePath, options);
-
-    mPhotoAdded.setImageBitmap(bm);
+    showImage();
   }
 
   public void showDateTimePickerDialog(View view) {
@@ -266,7 +284,7 @@ public class TestListView extends AppCompatActivity {
         mDescriptionText.getText().toString(),
         mDueDateText.getText().toString(),
         mDoDateText.getText().toString(),
-        "filepath",  // TODO: get file path
+        mCurrentPhotoPath,
         mStartTimeText.getText().toString(),
         mHourPermittedPicker.getValue(),
         mMinutePermittedPicker.getValue(),

@@ -1,4 +1,4 @@
-package siyugu.homework;
+package siyugu.homework.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import siyugu.homework.R;
 
 public class ScrollingActivity extends AppCompatActivity {
   static final String TAG = "ScrollingActivity";

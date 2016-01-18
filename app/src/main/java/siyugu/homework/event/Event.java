@@ -4,7 +4,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 
-import siyugu.homework.TimeUtil;
+import siyugu.homework.util.TimeUtil;
 
 public class Event {
   private TypeOfWork typeOfWork;

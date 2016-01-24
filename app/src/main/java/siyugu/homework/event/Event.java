@@ -10,6 +10,9 @@ import org.joda.time.Period;
 
 import siyugu.homework.util.TimeUtil;
 
+/**
+ * Event is immutable. Use Event#toBuilder to get a Builder object.
+ */
 public class Event {
   private TypeOfWork typeOfWork;
   @Nullable
@@ -25,7 +28,6 @@ public class Event {
   private WarningTime warningTime;
   @Nullable
   private RepeatPattern repeatPattern;
-
   private boolean completed;
 
   public enum TypeOfWork {
@@ -125,10 +127,6 @@ public class Event {
     return completed;
   }
 
-  public void setCompleted(boolean completed) {
-    this.completed = completed;
-  }
-
   /*================Getter and Setter (end)================*/
 
   // TODO: make sure fields have appropriate default values
@@ -151,10 +149,38 @@ public class Event {
     this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDate);
     this.picturePath = picturePath;
     this.startTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(startTime);
-    this.permittedTime = new Period(permittedHour, permittedMinute, 0 /* seconds */, 0 /* millis */);
+    this.permittedTime = new Period(permittedHour,
+        permittedMinute,
+        0 /* seconds */,
+        0 /* millis */);
     this.warningTime = warningTime;
     this.repeatPattern = repeatPattern;
     this.completed = false;
+  }
+
+  // used by Builder
+  private Event(
+      TypeOfWork typeOfWork,
+      String description,
+      LocalDate dueDate,
+      LocalDate doDate,
+      String picturePath,
+      LocalTime startTime,
+      Period permittedTime,
+      WarningTime warningTime,
+      RepeatPattern repeatPattern,
+      boolean completed
+  ) {
+    this.typeOfWork = typeOfWork;
+    this.description = description;
+    this.dueDate = dueDate;
+    this.doDate = doDate;
+    this.picturePath = picturePath;
+    this.startTime = startTime;
+    this.permittedTime = permittedTime;
+    this.warningTime = warningTime;
+    this.repeatPattern = repeatPattern;
+    this.completed = completed;
   }
 
   @VisibleForTesting
@@ -169,12 +195,100 @@ public class Event {
     this.description = description;
     this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDate);
     this.startTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(startTime);
-    this.permittedTime = new Period(permittedHour, permittedMinute, 0 /* seconds */, 0 /* millis */);
+    this.permittedTime = new Period(permittedHour,
+        permittedMinute,
+        0 /* seconds */,
+        0 /* millis */);
     this.completed = false;
   }
 
   @Override
   public String toString() {
     return description;
+  }
+
+  public Builder toBuilder() {
+    return new Builder().setTypeOfWork(typeOfWork).setDescription(description).setDueDate(dueDate)
+        .setDoDate(doDate).setPicturePath(picturePath).setPermittedTime(permittedTime)
+        .setWarningTime(warningTime).setRepeatPattern(repeatPattern).setCompleted(completed);
+  }
+
+  public static final class Builder {
+    private TypeOfWork typeOfWork;
+    private String description;
+    private LocalDate dueDate;
+    private LocalDate doDate;
+    private String picturePath;
+    private LocalTime startTime;
+    private Period permittedTime;
+    private WarningTime warningTime;
+    private RepeatPattern repeatPattern;
+    private boolean completed;
+
+    private Builder() {
+    }
+
+    public Builder setTypeOfWork(TypeOfWork typeOfWork) {
+      this.typeOfWork = typeOfWork;
+      return this;
+    }
+
+    public Builder setDescription(String description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder setDueDate(LocalDate dueDate) {
+      this.dueDate = dueDate;
+      return this;
+    }
+
+    public Builder setDoDate(LocalDate doDate) {
+      this.doDate = doDate;
+      return this;
+    }
+
+    public Builder setPicturePath(String picturePath) {
+      this.picturePath = picturePath;
+      return this;
+    }
+
+    public Builder setStartTime(LocalTime startTime) {
+      this.startTime = startTime;
+      return this;
+    }
+
+    public Builder setPermittedTime(Period permittedTime) {
+      this.permittedTime = permittedTime;
+      return this;
+    }
+
+    public Builder setWarningTime(WarningTime warningTime) {
+      this.warningTime = warningTime;
+      return this;
+    }
+
+    public Builder setRepeatPattern(RepeatPattern repeatPattern) {
+      this.repeatPattern = repeatPattern;
+      return this;
+    }
+
+    public Builder setCompleted(boolean completed) {
+      this.completed = completed;
+      return this;
+    }
+
+    public Event build() {
+      return new Event(typeOfWork,
+          description,
+          dueDate,
+          doDate,
+          picturePath,
+          startTime,
+          permittedTime,
+          warningTime,
+          repeatPattern,
+          completed);
+    }
   }
 }

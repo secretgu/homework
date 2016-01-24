@@ -155,7 +155,8 @@ public class EditModeActivity extends AppCompatActivity {
               startActivityForResult(intent, CAMERA_REQUEST);
             }
           }
-        } else if (items[item].equals(getResources().getString(R.string.choose_from_libray_menuitem))) {
+        } else if (items[item]
+            .equals(getResources().getString(R.string.choose_from_libray_menuitem))) {
           Intent intent = new Intent(
               Intent.ACTION_PICK,
               android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -212,7 +213,12 @@ public class EditModeActivity extends AppCompatActivity {
   private void onSelectFromGalleryResult(Intent data) {
     Uri selectedImageUri = data.getData();
     String[] projection = {MediaStore.MediaColumns.DATA};
-    CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null, null);
+    CursorLoader cursorLoader = new CursorLoader(this,
+        selectedImageUri,
+        projection,
+        null,
+        null,
+        null);
     Cursor cursor = cursorLoader.loadInBackground();
     int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
     cursor.moveToFirst();
@@ -294,14 +300,14 @@ public class EditModeActivity extends AppCompatActivity {
     );
     eventDB.addEvent(e);
 
-    // back to main activity
+    setResult(Activity.RESULT_OK);
     finish();
   }
 
   public void onCancelBtnClick(View view) {
     eventDB.printAllEvents();
 
-    // back to main activity
+    setResult(Activity.RESULT_CANCELED);
     finish();
   }
 }

@@ -84,7 +84,9 @@ public class EventDB {
     }
   }
 
-  // TODO: make the API follow flow pattern, if easy to do.
+  // TODO: make the API follow flow pattern. Consider using
+  // com.google.common.collect.Lists#transform.
+  // Example: java/com/google/geo/sidekick/frontend/controller/EntryQueryController.java
   private synchronized List<Event> getTodayEvents() {
     List<Event> todayEvents = new ArrayList<Event>();
     Predicate<Event> predicate = new TodayEventsPredicate();

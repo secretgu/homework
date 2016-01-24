@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,9 @@ public class TodaySchedule extends AppCompatActivity {
   private EventDB eventDB;
   private ListView mTodayEventsListView;
 
+  public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
+
+  private final static String TAG = "TodaySchedule";
   private final static int NEW_EVENT_REQUEST = 1;
 
   @Override
@@ -42,7 +44,7 @@ public class TodaySchedule extends AppCompatActivity {
   }
 
   private void initializeEventDB() {
-    eventDB = EventDB.getInstance();
+    eventDB = new EventDB();
 
     // TODO: later probably the initialization will happen by deserializing data in the Bundle
     initializeEventDBForTesting();
@@ -120,7 +122,11 @@ public class TodaySchedule extends AppCompatActivity {
 
     if (requestCode == NEW_EVENT_REQUEST) {
       if (resultCode == Activity.RESULT_OK) {
-        fillListView(mTodayEventsListView);
+        Event newEvent = data.getParcelableExtra(NEW_EVENT_EXTRA);
+        if (newEvent != null) {
+          eventDB.addEvent(newEvent);
+          fillListView(mTodayEventsListView);
+        }
       }
     }
   }
@@ -201,7 +207,6 @@ public class TodaySchedule extends AppCompatActivity {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-      Log.d("ItemAdaptor", "getView called for position " + position);
       View view = convertView;
       Item item = data.get(position);
 

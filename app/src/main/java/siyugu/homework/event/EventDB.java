@@ -14,30 +14,17 @@ import org.joda.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-// TODO: make sure this is thread-safe
 public class EventDB {
   private static final String TAG = "EventDB";
   private List<Event> allEvents;
-  private static EventDB instance = new EventDB();
 
-  private EventDB() {
+  public EventDB() {
     allEvents = new ArrayList<Event>();
   }
 
-  public static EventDB getInstance() {
-    return instance;
-  }
-
-  public synchronized void addEvent(Event e) {
+  public void addEvent(Event e) {
     Log.e(TAG, "add: " + e.toString());
     allEvents.add(e);
-  }
-
-  public synchronized void printAllEvents() {
-    for (Event e : allEvents) {
-      Log.e(TAG, "event:" + e.toString());
-    }
   }
 
   public final static class TodayEventsPredicate implements Predicate<Event> {
@@ -63,7 +50,8 @@ public class EventDB {
 
     @VisibleForTesting
     boolean isNowEvent(LocalTime currentTime, LocalTime eventStartTime) {
-      Duration duration = new Duration(currentTime.toDateTimeToday(), eventStartTime.toDateTimeToday());
+      Duration duration = new Duration(currentTime.toDateTimeToday(),
+          eventStartTime.toDateTimeToday());
       if (duration.getStandardDays() != 0) {
         throw new java.lang.AssertionError("Not same day?");
       }
@@ -73,8 +61,17 @@ public class EventDB {
 
   public final static class UpcomingEventsPredicate implements Predicate<Event> {
     public boolean apply(Event event) {
-      NowEventsPredicate nowEventsPredicate = new NowEventsPredicate();
-      return !nowEventsPredicate.apply(event);
+      return isUpcomingEvent(new LocalTime(), event.getStartTime());
+    }
+
+    @VisibleForTesting
+    boolean isUpcomingEvent(LocalTime currentTime, LocalTime eventStartTime) {
+      Duration duration = new Duration(currentTime.toDateTimeToday(),
+          eventStartTime.toDateTimeToday());
+      if (duration.getStandardDays() != 0) {
+        throw new java.lang.AssertionError("Not same day?");
+      }
+      return duration.getStandardHours() >= NOW_WITHIN_HOURS;
     }
   }
 
@@ -87,7 +84,7 @@ public class EventDB {
   // TODO: make the API follow flow pattern. Consider using
   // com.google.common.collect.Lists#transform.
   // Example: java/com/google/geo/sidekick/frontend/controller/EntryQueryController.java
-  private synchronized List<Event> getTodayEvents() {
+  private List<Event> getTodayEvents() {
     List<Event> todayEvents = new ArrayList<Event>();
     Predicate<Event> predicate = new TodayEventsPredicate();
     for (Event e : allEvents) {

@@ -29,12 +29,10 @@ import java.io.IOException;
 
 import siyugu.homework.R;
 import siyugu.homework.event.Event;
-import siyugu.homework.event.EventDB;
 import siyugu.homework.util.BundleKeys;
 
-// TODO: Sometimes app throws exception on objects being freed, probably due to not implementing onPause/onResuse
 public class EditModeActivity extends AppCompatActivity {
-  private static final String TAG = "TestListView";
+  private static final String TAG = "EditModeActivity";
 
   private static final int CHOOSE_IMAGE_REQUEST = 1;
   private static final int CAMERA_REQUEST = 2;
@@ -52,14 +50,11 @@ public class EditModeActivity extends AppCompatActivity {
   private EditText mStartTimeText;
   private String mCurrentPhotoPath;
 
-  private EventDB eventDB;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.edit_mode_view);
 
-    eventDB = EventDB.getInstance();
     mCurrentPhotoPath = null;
 
     initializeUiFields();
@@ -298,15 +293,14 @@ public class EditModeActivity extends AppCompatActivity {
         (Event.WarningTime) mWarningTimeSpinner.getSelectedItem(),
         (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
     );
-    eventDB.addEvent(e);
 
-    setResult(Activity.RESULT_OK);
+    Intent returnIntent = new Intent();
+    returnIntent.putExtra(TodaySchedule.NEW_EVENT_EXTRA, e);
+    setResult(Activity.RESULT_OK, returnIntent);
     finish();
   }
 
   public void onCancelBtnClick(View view) {
-    eventDB.printAllEvents();
-
     setResult(Activity.RESULT_CANCELED);
     finish();
   }

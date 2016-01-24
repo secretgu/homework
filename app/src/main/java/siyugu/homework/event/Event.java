@@ -1,5 +1,7 @@
 package siyugu.homework.event;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -8,12 +10,14 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 
+import java.util.Objects;
+
 import siyugu.homework.util.TimeUtil;
 
 /**
  * Event is immutable. Use Event#toBuilder to get a Builder object.
  */
-public class Event {
+public class Event implements Parcelable {
   private TypeOfWork typeOfWork;
   @Nullable
   private String description;
@@ -85,7 +89,7 @@ public class Event {
     private String text;
   }
 
-  /*================Getter and Setter (start)================*/
+  /*================Getter and Setter (begin)================*/
 
   public TypeOfWork getTypeOfWork() {
     return typeOfWork;
@@ -128,6 +132,91 @@ public class Event {
   }
 
   /*================Getter and Setter (end)================*/
+
+  /*================Equals (begin)================*/
+  @Override
+  public int hashCode() {
+    return Objects.hash(typeOfWork,
+        description,
+        dueDate,
+        doDate,
+        picturePath,
+        startTime,
+        permittedTime,
+        warningTime,
+        repeatPattern,
+        completed);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (obj instanceof Event == false) {
+      return false;
+    }
+    Event rhs = (Event) obj;
+    return Objects.equals(typeOfWork, rhs.typeOfWork)
+        && Objects.equals(description, rhs.description)
+        && Objects.equals(dueDate, rhs.dueDate)
+        && Objects.equals(doDate, rhs.doDate)
+        && Objects.equals(picturePath, rhs.picturePath)
+        && Objects.equals(startTime, rhs.startTime)
+        && Objects.equals(permittedTime, rhs.permittedTime)
+        && Objects.equals(warningTime, rhs.warningTime)
+        && Objects.equals(repeatPattern, rhs.repeatPattern)
+        && Objects.equals(completed, rhs.completed);
+  }
+
+  /*================Equals (end)================*/
+
+  /*================Parcelable (begin)================*/
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    dest.writeSerializable(typeOfWork);
+    dest.writeString(description);
+    dest.writeSerializable(dueDate);
+    dest.writeSerializable(doDate);
+    dest.writeString(picturePath);
+    dest.writeSerializable(startTime);
+    dest.writeSerializable(permittedTime);
+    dest.writeSerializable(warningTime);
+    dest.writeSerializable(repeatPattern);
+    dest.writeInt(completed ? 1 : 0);
+  }
+
+  public static final Parcelable.Creator<Event> CREATOR
+      = new Parcelable.Creator<Event>() {
+    public Event createFromParcel(Parcel in) {
+      return new Event(in);
+    }
+
+    public Event[] newArray(int size) {
+      return new Event[size];
+    }
+  };
+
+  // TODO: add an Android Instrumented Tests for this
+  private Event(Parcel in) {
+    this((TypeOfWork) in.readSerializable(),
+        in.readString(),
+        (LocalDate) in.readSerializable(),
+        (LocalDate) in.readSerializable(),
+        in.readString(),
+        (LocalTime) in.readSerializable(),
+        (Period) in.readSerializable(),
+        (WarningTime) in.readSerializable(),
+        (RepeatPattern) in.readSerializable(),
+        in.readInt() > 0);
+  }
+
+  /*================Parcelable (end)================*/
 
   // TODO: make sure fields have appropriate default values
   public Event(

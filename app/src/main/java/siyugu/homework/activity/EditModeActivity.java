@@ -18,8 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
@@ -27,12 +27,15 @@ import android.widget.Toast;
 
 import com.google.common.base.Strings;
 
+import org.joda.time.Period;
+
 import java.io.File;
 import java.io.IOException;
 
 import siyugu.homework.R;
 import siyugu.homework.event.Event;
 import siyugu.homework.util.BundleKeys;
+import siyugu.homework.util.TimeUtil;
 
 public class EditModeActivity extends AppCompatActivity {
   private static final String TAG = "EditModeActivity";
@@ -45,13 +48,14 @@ public class EditModeActivity extends AppCompatActivity {
   private Spinner mRepeatSpinner;
   private NumberPicker mHourPermittedPicker;
   private NumberPicker mMinutePermittedPicker;
-  private ImageButton mInsertPhotoBtn;
   private ImageView mPhotoAdded;
   private EditText mDescriptionText;
   private EditText mDueDateText;
   private EditText mDoDateText;
   private EditText mStartTimeText;
   private String mCurrentPhotoPath;
+  private Button mSubmitBtn;
+  private Event mEventEditting;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,33 @@ public class EditModeActivity extends AppCompatActivity {
     initializeUiFields();
     initializeSpinners();
     initializeNumberPicker();
+
+    Intent intent = getIntent();
+    if (intent.hasExtra(TodaySchedule.EDIT_EVENT_EXTRA)) {
+      mSubmitBtn.setText(R.string.save_modification_text);
+      mEventEditting = (Event) intent.getSerializableExtra(TodaySchedule.EDIT_EVENT_EXTRA);
+      initializeUiValuesWithEvent(mEventEditting);
+    }
+  }
+
+  private void initializeUiValuesWithEvent(Event e) {
+    mTypeOfWorkSpinner.setSelection(e.getTypeOfWork().ordinal());
+    mWarningTimeSpinner.setSelection(e.getWarningTime().ordinal());
+    mRepeatSpinner.setSelection(e.getRepeatPattern().ordinal());
+    if (e.getDescription() != null) {
+      mDescriptionText.setText(e.getDescription());
+    }
+    if (e.getDueDate() != null) {
+      mDueDateText.setText(TimeUtil.LOCALDATE_FORMATTER.print(e.getDueDate()));
+    }
+    mDoDateText.setText(TimeUtil.LOCALDATE_FORMATTER.print(e.getDoDate()));
+    mStartTimeText.setText(TimeUtil.LOCALTIME_FORMATTER.print(e.getStartTime()));
+    Period permittedTime = e.getPermittedTime();
+    mHourPermittedPicker.setValue(permittedTime.getHours());
+    mMinutePermittedPicker.setValue(permittedTime.getMinutes());
+
+    mCurrentPhotoPath = e.getPicturePath();
+    showImage();
   }
 
   // Call before other initializing methods
@@ -73,11 +104,11 @@ public class EditModeActivity extends AppCompatActivity {
     mHourPermittedPicker = (NumberPicker) findViewById(R.id.hour_permitted_picker);
     mMinutePermittedPicker = (NumberPicker) findViewById(R.id.minute_permitted_picker);
     mPhotoAdded = (ImageView) findViewById(R.id.photo_added);
-    mInsertPhotoBtn = (ImageButton) findViewById(R.id.add_photo_btn);
     mDescriptionText = (EditText) findViewById(R.id.editDescription);
     mDueDateText = (EditText) findViewById(R.id.edit_due_date);
     mDoDateText = (EditText) findViewById(R.id.edit_do_date);
     mStartTimeText = (EditText) findViewById(R.id.edit_start_time);
+    mSubmitBtn = (Button) findViewById(R.id.add_event_btn);
   }
 
   private void initializeSpinners() {
@@ -291,21 +322,35 @@ public class EditModeActivity extends AppCompatActivity {
       return;
     }
 
-    Event e = new Event(
-        (Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem(),
-        mDescriptionText.getText().toString(),
-        mDueDateText.getText().toString(),
-        mDoDateText.getText().toString(),
-        mCurrentPhotoPath,
-        mStartTimeText.getText().toString(),
-        mHourPermittedPicker.getValue(),
-        mMinutePermittedPicker.getValue(),
-        (Event.WarningTime) mWarningTimeSpinner.getSelectedItem(),
-        (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
-    );
+    if (mEventEditting == null) {
+      mEventEditting = new Event(
+          (Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem(),
+          mDescriptionText.getText().toString(),
+          mDueDateText.getText().toString(),
+          mDoDateText.getText().toString(),
+          mCurrentPhotoPath,
+          mStartTimeText.getText().toString(),
+          mHourPermittedPicker.getValue(),
+          mMinutePermittedPicker.getValue(),
+          (Event.WarningTime) mWarningTimeSpinner.getSelectedItem(),
+          (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
+      );
+    } else {
+      mEventEditting = mEventEditting.toBuilder()
+          .setTypeOfWork((Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem())
+          .setDescription(mDescriptionText.getText().toString())
+          .setDueDate(mDueDateText.getText().toString())
+          .setDoDate(mDoDateText.getText().toString())
+          .setPicturePath(mCurrentPhotoPath)
+          .setStartTime(mStartTimeText.getText().toString())
+          .setPermittedTime(mHourPermittedPicker.getValue(), mMinutePermittedPicker.getValue())
+          .setWarningTime((Event.WarningTime) mWarningTimeSpinner.getSelectedItem())
+          .setRepeatPattern((Event.RepeatPattern) mRepeatSpinner.getSelectedItem())
+          .build();
+    }
 
     Intent returnIntent = new Intent();
-    returnIntent.putExtra(TodaySchedule.NEW_EVENT_EXTRA, e);
+    returnIntent.putExtra(TodaySchedule.NEW_EVENT_EXTRA, mEventEditting);
     setResult(Activity.RESULT_OK, returnIntent);
     finish();
   }

@@ -2,14 +2,13 @@ package siyugu.homework.event;
 
 import android.support.annotation.Nullable;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 
 import java.io.Serializable;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.util.TimeUtil;
 
 /**
@@ -26,11 +25,26 @@ public class Event implements Serializable {
   private String picturePath;
   private LocalTime startTime;
   private Period permittedTime;
-  @Nullable
   private WarningTime warningTime;
-  @Nullable
   private RepeatPattern repeatPattern;
   private boolean completed;
+
+  // TODO: looks error-prone. Might switch to allow setters for Event.
+  private long id;  // unique id in entire EventDB
+
+  private static long lastId = 0;
+
+  static void setLastId(long id) {
+    lastId = id;
+  }
+
+  static long peekLastId() {
+    return lastId;
+  }
+
+  private static long getLastId() {
+    return lastId++;
+  }
 
   public enum TypeOfWork {
     CLUB("club"),
@@ -88,6 +102,10 @@ public class Event implements Serializable {
   }
 
   /*================Getter and Setter (begin)================*/
+
+  public long getId() {
+    return id;
+  }
 
   public TypeOfWork getTypeOfWork() {
     return typeOfWork;
@@ -156,10 +174,30 @@ public class Event implements Serializable {
     this.warningTime = warningTime;
     this.repeatPattern = repeatPattern;
     this.completed = false;
+
+    this.id = getLastId();
+  }
+
+  public void copyFrom(Event e) {
+    if (BuildConfig.DEBUG) {
+      if (this.id != e.id) {
+        throw new AssertionError("copy from an event that is not itself");
+      }
+    }
+    this.description = e.description;
+    this.dueDate = e.dueDate;
+    this.doDate = e.doDate;
+    this.picturePath = e.picturePath;
+    this.startTime = e.startTime;
+    this.permittedTime = e.permittedTime;
+    this.warningTime = e.warningTime;
+    this.repeatPattern = e.repeatPattern;
+    this.completed = e.completed;
   }
 
   // used by Builder
   private Event(
+      long id,
       TypeOfWork typeOfWork,
       String description,
       LocalDate dueDate,
@@ -171,6 +209,7 @@ public class Event implements Serializable {
       RepeatPattern repeatPattern,
       boolean completed
   ) {
+    this.id = id;
     this.typeOfWork = typeOfWork;
     this.description = description;
     this.dueDate = dueDate;
@@ -183,37 +222,16 @@ public class Event implements Serializable {
     this.completed = completed;
   }
 
-  @VisibleForTesting
-  public Event(
-      TypeOfWork typeOfWork,
-      String description,
-      String doDate,
-      String startTime,
-      int permittedHour,
-      int permittedMinute) {
-    this.typeOfWork = typeOfWork;
-    this.description = description;
-    this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDate);
-    this.startTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(startTime);
-    this.permittedTime = new Period(permittedHour,
-        permittedMinute,
-        0 /* seconds */,
-        0 /* millis */);
-    this.completed = false;
-  }
-
-  @Override
-  public String toString() {
-    return description;
-  }
-
+  // TODO: delete Builder if it turns out to be not useful
   public Builder toBuilder() {
-    return new Builder().setTypeOfWork(typeOfWork).setDescription(description).setDueDate(dueDate)
-        .setDoDate(doDate).setPicturePath(picturePath).setPermittedTime(permittedTime)
+    return new Builder(id).setTypeOfWork(typeOfWork).setDescription(description).setDueDate(dueDate)
+        .setDoDate(doDate).setStartTime(startTime).setPicturePath(picturePath)
+        .setPermittedTime(permittedTime)
         .setWarningTime(warningTime).setRepeatPattern(repeatPattern).setCompleted(completed);
   }
 
   public static final class Builder {
+    private long id;
     private TypeOfWork typeOfWork;
     private String description;
     private LocalDate dueDate;
@@ -225,7 +243,8 @@ public class Event implements Serializable {
     private RepeatPattern repeatPattern;
     private boolean completed;
 
-    private Builder() {
+    private Builder(long id) {
+      this.id = id;
     }
 
     public Builder setTypeOfWork(TypeOfWork typeOfWork) {
@@ -243,8 +262,18 @@ public class Event implements Serializable {
       return this;
     }
 
+    public Builder setDueDate(String dueDateText) {
+      this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDateText);
+      return this;
+    }
+
     public Builder setDoDate(LocalDate doDate) {
       this.doDate = doDate;
+      return this;
+    }
+
+    public Builder setDoDate(String doDateText) {
+      this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDateText);
       return this;
     }
 
@@ -258,8 +287,18 @@ public class Event implements Serializable {
       return this;
     }
 
+    public Builder setStartTime(String startTimeText) {
+      this.startTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(startTimeText);
+      return this;
+    }
+
     public Builder setPermittedTime(Period permittedTime) {
       this.permittedTime = permittedTime;
+      return this;
+    }
+
+    public Builder setPermittedTime(int hour, int minute) {
+      this.permittedTime = new Period(hour, minute, 0, 0);
       return this;
     }
 
@@ -279,7 +318,9 @@ public class Event implements Serializable {
     }
 
     public Event build() {
-      return new Event(typeOfWork,
+      return new Event(
+          id,
+          typeOfWork,
           description,
           dueDate,
           doDate,

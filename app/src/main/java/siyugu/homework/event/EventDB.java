@@ -24,6 +24,7 @@ public class EventDB {
   private static final String TAG = "EventDB";
   private ArrayList<Event> allEvents;
   private transient File backupFile;  // not to be serialized
+  private boolean flushed = false;
 
   public EventDB(File backupFile) throws Exception {
     this.backupFile = backupFile;
@@ -34,24 +35,46 @@ public class EventDB {
     if (backupFile.exists()) {
       ObjectInputStream in = new ObjectInputStream(new FileInputStream(backupFile));
       allEvents = (ArrayList<Event>) in.readObject();
+      long lastId = in.readLong();
+      // Invariant: lastId == max(Event#id in allEvents) or 0 if allEvents is empty
+      Event.setLastId(lastId);
       in.close();
       Log.i(TAG, "Deserialized data from " + backupFile.getAbsolutePath());
     } else {
       allEvents = new ArrayList<Event>();
     }
+    flushed = true;  // nothing new
   }
 
   public void addEvent(Event e) {
-    Log.i(TAG, "add: " + e.toString());
-    allEvents.add(e);
+    flushed = false;
+    boolean found = false;
+    for (Event event : allEvents) {
+      if (event.getId() == e.getId()) {
+        Log.i(TAG, "replace existing event " + e.getId());
+        event.copyFrom(e);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      Log.i(TAG, "add new event " + e.getId() + ": " + e.getDescription());
+      allEvents.add(e);
+    }
   }
 
   public void flush() throws IOException {
-    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(backupFile));
-    oos.writeObject(allEvents);
-    oos.flush();
-    oos.close();
-    Log.i(TAG, "Serialized data is saved in " + backupFile.getAbsolutePath());
+    if (!flushed) {
+      ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(backupFile));
+      oos.writeObject(allEvents);
+      oos.writeLong(Event.peekLastId());
+      oos.flush();
+      oos.close();
+      Log.i(TAG, "Serialized data is saved in " + backupFile.getAbsolutePath());
+      flushed = true;
+    } else {
+      Log.i(TAG, "Nothing new to persist");
+    }
   }
 
   public final static class TodayEventsPredicate implements Predicate<Event> {

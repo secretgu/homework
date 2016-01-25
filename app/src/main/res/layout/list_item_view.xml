@@ -15,12 +15,14 @@
             android:id="@+id/event_type_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             tools:text="Homework"/>
 
         <CheckBox
             android:id="@+id/event_description_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             tools:text="CS425 Distributed system MP1"/>
     </LinearLayout>
 
@@ -35,23 +37,27 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:text="@string/start_time"/>
 
         <TextView
             android:id="@+id/start_time_text_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             tools:text="5:30pm"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:text="@string/time_permitted"/>
 
         <TextView
             android:id="@+id/time_permitted_text_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
             tools:text="1 hr"/>
     </GridLayout>
 </LinearLayout>

@@ -115,8 +115,19 @@
     </string-array>
 
     <string name="add_event_text">Add</string>
+    <string name="save_modification_text">Save</string>
     <string name="cancel_add_text">Cancel</string>
 
     <string name="now_header_text">Now</string>
     <string name="upcoming_header_text">Upcoming</string>
+
+    <string name="modify_event_menu_title">Modify Event</string>
+    <string name="mark_as_completed_menuitem">Mark as completed</string>
+    <string name="modify_event_menuitem">Modify event</string>
+
+    <string-array name="event_longclick_menus">
+        <item>@string/mark_as_completed_menuitem</item>
+        <item>@string/modify_event_menuitem</item>
+        <item>@string/cancel_menuitem</item>
+    </string-array>
 </resources>

@@ -1,7 +1,9 @@
 package siyugu.homework.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,13 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,16 +32,32 @@ public class TodaySchedule extends AppCompatActivity {
   private ListView mTodayEventsListView;
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
+  public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
   public final static String EVENTS_FILE_PATH = "homework_events.ser";
 
   private final static String TAG = "TodaySchedule";
   private final static int NEW_EVENT_REQUEST = 1;
+  private final static int MODIFY_EVENT_REQUEST = 2;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.today_schedule_view);
     mTodayEventsListView = (ListView) findViewById(R.id.today_events_listview);
+    mTodayEventsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+      @Override
+      public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.i(TAG, "long clicked");
+        Item item = (Item) mTodayEventsListView.getAdapter().getItem(position);
+        if (item.isSection()) {
+          // nothing needs to be done
+        } else {
+          Event e = ((EntryItem) item).getEvent();
+          eventLongClick(e);
+        }
+        return true;
+      }
+    });
 
     try {
       eventDB = new EventDB(getEventsFilePath());
@@ -49,7 +65,34 @@ public class TodaySchedule extends AppCompatActivity {
       Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
       throw new RuntimeException(e);
     }
-    fillListView(mTodayEventsListView);
+    fillListView();
+  }
+
+  public void eventLongClick(final Event e) {
+    final CharSequence[] items = getResources().getStringArray(R.array.event_longclick_menus);
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle(R.string.modify_event_menu_title);
+    builder.setItems(items, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int item) {
+        if (items[item].equals(getResources().getString(R.string.mark_as_completed_menuitem))) {
+          Log.i(TAG, e.getDescription() + " mark as completed");
+          if (!e.getCompleted()) {
+            eventDB.addEvent(e.toBuilder().setCompleted(true).build());
+            fillListView();
+          }
+        } else if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
+          Log.i(TAG, e.getDescription() + " selected to be modified");
+          Intent intent = new Intent(TodaySchedule.this, EditModeActivity.class);
+          intent.putExtra(EDIT_EVENT_EXTRA, e);
+          startActivityForResult(intent, NEW_EVENT_REQUEST);
+        } else if (items[item].equals(getResources().getString(R.string.cancel_menuitem))) {
+          dialog.dismiss();
+        }
+      }
+    });
+    builder.show();
   }
 
   private File getEventsFilePath() {
@@ -70,65 +113,8 @@ public class TodaySchedule extends AppCompatActivity {
     super.onStop();
   }
 
-  private void addTestEvents() {
-    LocalDate today = new LocalDate();
-    LocalTime now = new LocalTime();
-
-    // now
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.HOMEWORK,
-        "CS425 MP1",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(1)),
-        1, 0));
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.HOMEWORK,
-        "CS423 MP1",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(2)),
-        0, 30));
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.HOMEWORK,
-        "CS425 MP2",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(1)),
-        1, 0));
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.HOMEWORK,
-        "CS423 MP2",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(2)),
-        0, 30));
-
-    // upcoming
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.CLUB,
-        "Beer",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(4).plusMinutes(30)),
-        1, 15));
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.PERSONAL,
-        "GYM",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(5)),
-        2, 15));
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.CLUB,
-        "Beer2",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(4).plusMinutes(30)),
-        1, 15));
-    eventDB.addEvent(new Event(
-        Event.TypeOfWork.PERSONAL,
-        "GYM2",
-        TimeUtil.LOCALDATE_FORMATTER.print(today),
-        TimeUtil.LOCALTIME_FORMATTER.print(now.plusHours(5)),
-        2, 15));
-  }
-
   public void onRefreshTodayClick(View view) {
-    fillListView(mTodayEventsListView);
+    fillListView();
   }
 
   public void onNewEventClick(View view) {
@@ -145,13 +131,13 @@ public class TodaySchedule extends AppCompatActivity {
         Event newEvent = (Event) data.getSerializableExtra(NEW_EVENT_EXTRA);
         if (newEvent != null) {
           eventDB.addEvent(newEvent);
-          fillListView(mTodayEventsListView);
+          fillListView();
         }
       }
     }
   }
 
-  private void fillListView(ListView view) {
+  private void fillListView() {
     List<Item> items = new ArrayList<Item>();
     items.add(new SectionItem("Now"));
     for (Event e : eventDB.getNowEvents()) {
@@ -165,7 +151,8 @@ public class TodaySchedule extends AppCompatActivity {
         R.layout.list_item_view,
         R.layout.listview_header_row,
         items);
-    view.setAdapter(adaptor);
+    // TODO: maybe have a "Past" section as well
+    mTodayEventsListView.setAdapter(adaptor);
   }
 
   private interface Item {

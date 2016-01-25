@@ -11,20 +11,47 @@ import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventDB {
   private static final String TAG = "EventDB";
-  private List<Event> allEvents;
+  private ArrayList<Event> allEvents;
+  private transient File backupFile;  // not to be serialized
 
-  public EventDB() {
-    allEvents = new ArrayList<Event>();
+  public EventDB(File backupFile) throws Exception {
+    this.backupFile = backupFile;
+    load();
+  }
+
+  private void load() throws IOException, ClassNotFoundException {
+    if (backupFile.exists()) {
+      ObjectInputStream in = new ObjectInputStream(new FileInputStream(backupFile));
+      allEvents = (ArrayList<Event>) in.readObject();
+      in.close();
+      Log.i(TAG, "Deserialized data from " + backupFile.getAbsolutePath());
+    } else {
+      allEvents = new ArrayList<Event>();
+    }
   }
 
   public void addEvent(Event e) {
-    Log.e(TAG, "add: " + e.toString());
+    Log.i(TAG, "add: " + e.toString());
     allEvents.add(e);
+  }
+
+  public void flush() throws IOException {
+    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(backupFile));
+    oos.writeObject(allEvents);
+    oos.flush();
+    oos.close();
+    Log.i(TAG, "Serialized data is saved in " + backupFile.getAbsolutePath());
   }
 
   public final static class TodayEventsPredicate implements Predicate<Event> {

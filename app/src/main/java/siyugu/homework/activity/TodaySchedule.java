@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class TodaySchedule extends AppCompatActivity {
   private ListView mTodayEventsListView;
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
+  public final static String EVENTS_FILE_PATH = "homework_events.ser";
 
   private final static String TAG = "TodaySchedule";
   private final static int NEW_EVENT_REQUEST = 1;
@@ -39,18 +43,34 @@ public class TodaySchedule extends AppCompatActivity {
     setContentView(R.layout.today_schedule_view);
     mTodayEventsListView = (ListView) findViewById(R.id.today_events_listview);
 
-    initializeEventDB();
+    try {
+      eventDB = new EventDB(getEventsFilePath());
+    } catch (Exception e) {
+      Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
+      throw new RuntimeException(e);
+    }
     fillListView(mTodayEventsListView);
   }
 
-  private void initializeEventDB() {
-    eventDB = new EventDB();
-
-    // TODO: later probably the initialization will happen by deserializing data in the Bundle
-    initializeEventDBForTesting();
+  private File getEventsFilePath() {
+    File eventsFile = new File(this.getFilesDir(), EVENTS_FILE_PATH);
+    Log.i(TAG, eventsFile.getAbsolutePath());
+    return eventsFile;
   }
 
-  private void initializeEventDBForTesting() {
+  @Override
+  public void onStop() {
+    Log.i(TAG, "onStop");
+    try {
+      eventDB.flush();
+    } catch (IOException e) {
+      Log.e(TAG, "FATAL: not able to save data to " + EVENTS_FILE_PATH);
+      throw new RuntimeException(e);
+    }
+    super.onStop();
+  }
+
+  private void addTestEvents() {
     LocalDate today = new LocalDate();
     LocalTime now = new LocalTime();
 
@@ -122,7 +142,7 @@ public class TodaySchedule extends AppCompatActivity {
 
     if (requestCode == NEW_EVENT_REQUEST) {
       if (resultCode == Activity.RESULT_OK) {
-        Event newEvent = data.getParcelableExtra(NEW_EVENT_EXTRA);
+        Event newEvent = (Event) data.getSerializableExtra(NEW_EVENT_EXTRA);
         if (newEvent != null) {
           eventDB.addEvent(newEvent);
           fillListView(mTodayEventsListView);

@@ -23,6 +23,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.google.common.base.Strings;
 
 import java.io.File;
 import java.io.IOException;
@@ -281,6 +284,13 @@ public class EditModeActivity extends AppCompatActivity {
   }
 
   public void onAddEventBtnClick(View view) {
+    String errorMsg = validateInputs();
+    if (errorMsg != null) {
+      Toast toast = Toast.makeText(this, errorMsg, Toast.LENGTH_LONG);
+      toast.show();
+      return;
+    }
+
     Event e = new Event(
         (Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem(),
         mDescriptionText.getText().toString(),
@@ -303,5 +313,15 @@ public class EditModeActivity extends AppCompatActivity {
   public void onCancelBtnClick(View view) {
     setResult(Activity.RESULT_CANCELED);
     finish();
+  }
+
+  private String validateInputs() {
+    if (Strings.isNullOrEmpty(mStartTimeText.getText().toString())) {
+      return "Must specify start time";
+    }
+    if (Strings.isNullOrEmpty(mDoDateText.getText().toString())) {
+      return "Must specify do date";
+    }
+    return null;
   }
 }

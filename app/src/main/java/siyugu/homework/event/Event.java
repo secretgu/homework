@@ -15,6 +15,7 @@ import siyugu.homework.util.TimeUtil;
  * Event is immutable. Use Event#toBuilder to get a Builder object.
  */
 public class Event implements Serializable {
+  private String title;
   private TypeOfWork typeOfWork;
   @Nullable
   private String description;
@@ -67,6 +68,7 @@ public class Event implements Serializable {
   }
 
   public enum RepeatPattern {
+    NO_REPEAT("no repeat"),
     DAILY("daily"),
     WEEKDAY("weekday"),
     WEEKEND("weekend");
@@ -84,7 +86,7 @@ public class Event implements Serializable {
   }
 
   public enum WarningTime {
-    MINUTE_1("1 minute (For test)", 1),
+    MINUTE_1("1 minute", 1),
     MINUTE_15("15 minutes", 15),
     MINUTE_30("30 minutes", 30),
     HOUR_1("1 hour", 60),
@@ -109,6 +111,9 @@ public class Event implements Serializable {
   }
 
   /*================Getter and Setter (begin)================*/
+  public String getTitle() {
+    return title;
+  }
 
   public long getId() {
     return id;
@@ -157,6 +162,7 @@ public class Event implements Serializable {
   /*================Getter and Setter (end)================*/
 
   public Event(
+      String title,
       TypeOfWork typeOfWork,
       String description,
       String dueDate,
@@ -168,6 +174,7 @@ public class Event implements Serializable {
       WarningTime warningTime,
       RepeatPattern repeatPattern
   ) {
+    this.title = title;
     this.typeOfWork = typeOfWork;
     this.description = description;
     this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDate);
@@ -191,6 +198,7 @@ public class Event implements Serializable {
         throw new AssertionError("copy from an event that is not itself");
       }
     }
+    this.title = e.title;
     this.description = e.description;
     this.dueDate = e.dueDate;
     this.doDate = e.doDate;
@@ -205,6 +213,7 @@ public class Event implements Serializable {
   // used by Builder
   private Event(
       long id,
+      String title,
       TypeOfWork typeOfWork,
       String description,
       LocalDate dueDate,
@@ -217,6 +226,7 @@ public class Event implements Serializable {
       boolean completed
   ) {
     this.id = id;
+    this.title = title;
     this.typeOfWork = typeOfWork;
     this.description = description;
     this.dueDate = dueDate;
@@ -231,7 +241,8 @@ public class Event implements Serializable {
 
   // TODO: delete Builder if it turns out to be not useful
   public Builder toBuilder() {
-    return new Builder(id).setTypeOfWork(typeOfWork).setDescription(description).setDueDate(dueDate)
+    return new Builder(id).setTitle(title).setTypeOfWork(typeOfWork).setDescription(description)
+        .setDueDate(dueDate)
         .setDoDate(doDate).setStartTime(startTime).setPicturePath(picturePath)
         .setPermittedTime(permittedTime)
         .setWarningTime(warningTime).setRepeatPattern(repeatPattern).setCompleted(completed);
@@ -239,6 +250,7 @@ public class Event implements Serializable {
 
   public static final class Builder {
     private long id;
+    private String title;
     private TypeOfWork typeOfWork;
     private String description;
     private LocalDate dueDate;
@@ -252,6 +264,11 @@ public class Event implements Serializable {
 
     private Builder(long id) {
       this.id = id;
+    }
+
+    public Builder setTitle(String title) {
+      this.title = title;
+      return this;
     }
 
     public Builder setTypeOfWork(TypeOfWork typeOfWork) {
@@ -327,6 +344,7 @@ public class Event implements Serializable {
     public Event build() {
       return new Event(
           id,
+          title,
           typeOfWork,
           description,
           dueDate,

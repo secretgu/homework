@@ -92,6 +92,7 @@
     <string name="action_settings">Settings</string>
 
     <!--Editting Mode Text-->
+    <string name="title">Title</string>
     <string name="type_of_work">Type of work:</string>
     <string name="description">Description:</string>
     <string name="due_date">Due Date:</string>

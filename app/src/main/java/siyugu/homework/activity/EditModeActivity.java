@@ -43,6 +43,7 @@ public class EditModeActivity extends AppCompatActivity {
   private static final int CHOOSE_IMAGE_REQUEST = 1;
   private static final int CAMERA_REQUEST = 2;
 
+  private EditText mTitleText;
   private Spinner mTypeOfWorkSpinner;
   private Spinner mWarningTimeSpinner;
   private Spinner mRepeatSpinner;
@@ -77,6 +78,7 @@ public class EditModeActivity extends AppCompatActivity {
   }
 
   private void initializeUiValuesWithEvent(Event e) {
+    mTitleText.setText(e.getTitle());
     mTypeOfWorkSpinner.setSelection(e.getTypeOfWork().ordinal());
     mWarningTimeSpinner.setSelection(e.getWarningTime().ordinal());
     mRepeatSpinner.setSelection(e.getRepeatPattern().ordinal());
@@ -98,6 +100,7 @@ public class EditModeActivity extends AppCompatActivity {
 
   // Call before other initializing methods
   private void initializeUiFields() {
+    mTitleText = (EditText) findViewById(R.id.title_edit);
     mTypeOfWorkSpinner = (Spinner) findViewById(R.id.type_of_work_selector);
     mWarningTimeSpinner = (Spinner) findViewById(R.id.warning_time_selector);
     mRepeatSpinner = (Spinner) findViewById(R.id.repeat_selector);
@@ -324,6 +327,7 @@ public class EditModeActivity extends AppCompatActivity {
 
     if (mEventEditting == null) {
       mEventEditting = new Event(
+          mTitleText.getText().toString(),
           (Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem(),
           mDescriptionText.getText().toString(),
           mDueDateText.getText().toString(),
@@ -337,6 +341,7 @@ public class EditModeActivity extends AppCompatActivity {
       );
     } else {
       mEventEditting = mEventEditting.toBuilder()
+          .setTitle(mTitleText.getText().toString())
           .setTypeOfWork((Event.TypeOfWork) mTypeOfWorkSpinner.getSelectedItem())
           .setDescription(mDescriptionText.getText().toString())
           .setDueDate(mDueDateText.getText().toString())
@@ -361,6 +366,9 @@ public class EditModeActivity extends AppCompatActivity {
   }
 
   private String validateInputs() {
+    if (Strings.isNullOrEmpty(mTitleText.getText().toString())) {
+      return "Must specify title";
+    }
     if (Strings.isNullOrEmpty(mStartTimeText.getText().toString())) {
       return "Must specify start time";
     }

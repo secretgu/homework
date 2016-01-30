@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import siyugu.homework.util.TimeUtil;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -22,6 +24,8 @@ public class ExampleUnitTest {
     EventDB.NowEventsPredicate predicate = new EventDB.NowEventsPredicate();
     LocalTime currentTime = new LocalTime();
 
+    LocalTime onePm = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime("01:00 PM");
+    assertFalse(predicate.isNowEvent(onePm, onePm.minusMinutes(1)));
     assertFalse(predicate.isNowEvent(currentTime, currentTime.minusHours(1)));
     assertFalse(predicate.isNowEvent(currentTime, currentTime.minusHours(2)));
     assertTrue(predicate.isNowEvent(currentTime, currentTime.minusHours(0)));

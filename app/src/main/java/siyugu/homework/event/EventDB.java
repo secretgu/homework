@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.joda.time.Days;
 import org.joda.time.Duration;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
@@ -20,6 +21,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import siyugu.homework.BuildConfig;
+
 public class EventDB {
   private static final String TAG = "EventDB";
   private ArrayList<Event> allEvents;
@@ -28,7 +31,18 @@ public class EventDB {
 
   public EventDB(File backupFile) throws Exception {
     this.backupFile = backupFile;
-    load();
+    try {
+      load();
+    } catch (Exception e) {
+      if (BuildConfig.DEBUG) {
+        e.printStackTrace();
+        // In debug build, just delete the backupFile
+        Log.e(TAG, "delete file: " + backupFile.getAbsolutePath());
+        backupFile.delete();
+      } else {
+        throw e;
+      }
+    }
   }
 
   private void load() throws IOException, ClassNotFoundException {
@@ -100,12 +114,10 @@ public class EventDB {
 
     @VisibleForTesting
     boolean isNowEvent(LocalTime currentTime, LocalTime eventStartTime) {
-      Duration duration = new Duration(currentTime.toDateTimeToday(),
-          eventStartTime.toDateTimeToday());
-      if (duration.getStandardDays() != 0) {
-        throw new java.lang.AssertionError("Not same day?");
-      }
-      return duration.getStandardHours() >= 0 && duration.getStandardHours() < NOW_WITHIN_HOURS;
+      Interval interval = new Interval(currentTime.toDateTimeToday(),
+          currentTime.toDateTimeToday().plusHours(
+              NOW_WITHIN_HOURS));
+      return interval.contains(eventStartTime.toDateTimeToday());
     }
   }
 
@@ -118,9 +130,6 @@ public class EventDB {
     boolean isUpcomingEvent(LocalTime currentTime, LocalTime eventStartTime) {
       Duration duration = new Duration(currentTime.toDateTimeToday(),
           eventStartTime.toDateTimeToday());
-      if (duration.getStandardDays() != 0) {
-        throw new java.lang.AssertionError("Not same day?");
-      }
       return duration.getStandardHours() >= NOW_WITHIN_HOURS;
     }
   }

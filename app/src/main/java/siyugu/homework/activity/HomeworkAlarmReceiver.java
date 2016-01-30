@@ -6,24 +6,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
-public class HomeworkAlarmReceiver extends WakefulBroadcastReceiver {
-  public HomeworkAlarmReceiver() {
-  }
+import siyugu.homework.event.Event;
 
+public class HomeworkAlarmReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
-    String text = "Hello world!";
-    if (intent.hasExtra(TestAlarmActivity.DATA_KEY)) {
-      text = intent.getStringExtra(TestAlarmActivity.DATA_KEY);
+    Log.i("HomeworkAlarmReceiver", "Receive broadcast");
+    if (!intent.hasExtra(TodaySchedule.ALARM_EVENT_EXTRA)) {
+      return;
     }
+    Event e = (Event) intent.getSerializableExtra(TodaySchedule.ALARM_EVENT_EXTRA);
     NotificationCompat.Builder mBuilder =
         new NotificationCompat.Builder(context)
             .setSmallIcon(android.R.drawable.stat_notify_chat)
-            .setContentTitle("Homework")
-            .setContentText(text);
+            .setContentTitle("Homework Notifications")
+            .setContentText(String
+                .format("%s starts in %d min(s)", e.getTitle(), e.getWarningTime().getMinute()));
     mBuilder.setAutoCancel(true);
 
     NotificationManager mNotificationManager =
@@ -37,7 +37,7 @@ public class HomeworkAlarmReceiver extends WakefulBroadcastReceiver {
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     boolean isScreenOn = pm.isScreenOn();
 
-    Log.e("screen on", "" + isScreenOn);
+    Log.i("screen on", "" + isScreenOn);
 
     if (isScreenOn == false) {
 

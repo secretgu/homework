@@ -19,8 +19,6 @@
         <activity android:name=".activity.EditModeActivity">
         </activity>
         <activity android:name=".activity.TodaySchedule">
-        </activity>
-        <activity android:name=".activity.TestAlarmActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

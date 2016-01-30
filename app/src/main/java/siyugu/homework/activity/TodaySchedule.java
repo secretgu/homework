@@ -3,6 +3,7 @@ package siyugu.homework.activity;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,11 +38,11 @@ public class TodaySchedule extends AppCompatActivity {
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
   public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
+  public final static String ALARM_EVENT_EXTRA = "ALARM_EVENT_EXTRA";
   public final static String EVENTS_FILE_PATH = "homework_events.ser";
 
   private final static String TAG = "TodaySchedule";
   private final static int NEW_EVENT_REQUEST = 1;
-  private final static int FIRE_NOTIFICATION = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +70,15 @@ public class TodaySchedule extends AppCompatActivity {
       Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
       throw new RuntimeException(e);
     }
-    fillListView();
 
     mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+  }
+
+  @Override
+  public void onResume() {
+    Log.i(TAG, "onResume");
+    super.onResume();
+    fillListView();
   }
 
   public void eventLongClick(final Event e) {
@@ -81,13 +90,13 @@ public class TodaySchedule extends AppCompatActivity {
       @Override
       public void onClick(DialogInterface dialog, int item) {
         if (items[item].equals(getResources().getString(R.string.mark_as_completed_menuitem))) {
-          Log.i(TAG, e.getDescription() + " mark as completed");
+          Log.i(TAG, e.getTitle() + " mark as completed");
           if (!e.getCompleted()) {
             eventDB.addEvent(e.toBuilder().setCompleted(true).build());
             fillListView();
           }
         } else if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
-          Log.i(TAG, e.getDescription() + " selected to be modified");
+          Log.i(TAG, e.getTitle() + " selected to be modified");
           Intent intent = new Intent(TodaySchedule.this, EditModeActivity.class);
           intent.putExtra(EDIT_EVENT_EXTRA, e);
           startActivityForResult(intent, NEW_EVENT_REQUEST);
@@ -143,6 +152,21 @@ public class TodaySchedule extends AppCompatActivity {
   }
 
   private void scheduleNotification(Event e) {
+    Intent intent = new Intent(this, HomeworkAlarmReceiver.class);
+    intent.putExtra(ALARM_EVENT_EXTRA, e);
+    PendingIntent pendingIntent = PendingIntent
+        .getBroadcast(this, (int) e.getId(), intent, PendingIntent.FLAG_ONE_SHOT);
+
+    DateTime timeToFire = e.getDoDate().toDateTime(e.getStartTime())
+        .minusMinutes(e.getWarningTime().getMinute());
+    Log.i(TAG,
+        String.format("Alarm for event id %d schedule at %s",
+            e.getId(),
+            timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+    timeToFire.minusMinutes(e.getWarningTime().getMinute());
+    mAlarmManager.set(AlarmManager.RTC_WAKEUP,
+        timeToFire.toInstant().getMillis(),
+        pendingIntent);
   }
 
   private void fillListView() {
@@ -245,14 +269,14 @@ public class TodaySchedule extends AppCompatActivity {
       view = inflater.inflate(entryLayoutResourceId, parent, false);
 
       TextView mEventTypeText = (TextView) view.findViewById(R.id.event_type_item);
-      CheckBox mDescriptionText = (CheckBox) view.findViewById(R.id.event_description_item);
+      CheckBox mTitleText = (CheckBox) view.findViewById(R.id.event_title_item);
       TextView mStartTimeText = (TextView) view.findViewById(R.id.start_time_text_item);
       TextView mTimePermittedText = (TextView) view.findViewById(R.id.time_permitted_text_item);
 
       Event e = item.getEvent();
       mEventTypeText.setText(e.getTypeOfWork().toString());
-      mDescriptionText.setText(e.getDescription());
-      mDescriptionText.setChecked(e.getCompleted());
+      mTitleText.setText(e.getTitle());
+      mTitleText.setChecked(e.getCompleted());
       mTimePermittedText.setText(
           String.format("%d hr %d min",
               e.getPermittedTime().getHours(),

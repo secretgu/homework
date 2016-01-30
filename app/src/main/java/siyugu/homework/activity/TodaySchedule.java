@@ -1,6 +1,7 @@
 package siyugu.homework.activity;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,6 +31,7 @@ import siyugu.homework.util.TimeUtil;
 public class TodaySchedule extends AppCompatActivity {
   private EventDB eventDB;
   private ListView mTodayEventsListView;
+  private AlarmManager mAlarmManager;
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
   public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
@@ -37,7 +39,7 @@ public class TodaySchedule extends AppCompatActivity {
 
   private final static String TAG = "TodaySchedule";
   private final static int NEW_EVENT_REQUEST = 1;
-  private final static int MODIFY_EVENT_REQUEST = 2;
+  private final static int FIRE_NOTIFICATION = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,8 @@ public class TodaySchedule extends AppCompatActivity {
       throw new RuntimeException(e);
     }
     fillListView();
+
+    mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
   }
 
   public void eventLongClick(final Event e) {
@@ -131,10 +135,14 @@ public class TodaySchedule extends AppCompatActivity {
         Event newEvent = (Event) data.getSerializableExtra(NEW_EVENT_EXTRA);
         if (newEvent != null) {
           eventDB.addEvent(newEvent);
+          scheduleNotification(newEvent);
           fillListView();
         }
       }
     }
+  }
+
+  private void scheduleNotification(Event e) {
   }
 
   private void fillListView() {

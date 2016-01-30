@@ -84,13 +84,15 @@ public class Event implements Serializable {
   }
 
   public enum WarningTime {
-    MINUTE_15("15 minutes"),
-    MINUTE_30("30 minutes"),
-    HOUR_1("1 hour"),
-    HOUR_2("2 hours");
+    MINUTE_1("1 minute (For test)", 1),
+    MINUTE_15("15 minutes", 15),
+    MINUTE_30("30 minutes", 30),
+    HOUR_1("1 hour", 60),
+    HOUR_2("2 hours", 120);
 
-    WarningTime(String text) {
+    WarningTime(String text, int minute) {
       this.text = text;
+      this.minute = minute;
     }
 
     @Override
@@ -98,7 +100,12 @@ public class Event implements Serializable {
       return text;
     }
 
+    public int getMinute() {
+      return minute;
+    }
+
     private String text;
+    private int minute;
   }
 
   /*================Getter and Setter (begin)================*/

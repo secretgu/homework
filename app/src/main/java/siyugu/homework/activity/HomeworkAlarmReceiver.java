@@ -11,9 +11,11 @@ import android.util.Log;
 import siyugu.homework.event.Event;
 
 public class HomeworkAlarmReceiver extends BroadcastReceiver {
+  private static final String TAG = "HomeworkAlarmReceiver";
+
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.i("HomeworkAlarmReceiver", "Receive broadcast");
+    Log.i(TAG, "Receive broadcast");
     if (!intent.hasExtra(TodaySchedule.ALARM_EVENT_EXTRA)) {
       return;
     }
@@ -33,11 +35,27 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
     wakeupScreen(context);
   }
 
+  private void repeat(Context context, Event e) {
+    // TODO: repeat pattern seems to be conflicting with do date a little bit. Low priority.
+    switch (e.getRepeatPattern()) {
+      case NO_REPEAT:
+        break;
+      case DAILY:
+        break;
+      case WEEKDAY:
+        break;
+      case WEEKEND:
+        break;
+      default:
+        Log.e(TAG, "not defined repeat pattern");
+    }
+  }
+
   private void wakeupScreen(Context context) {
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     boolean isScreenOn = pm.isScreenOn();
 
-    Log.i("screen on", "" + isScreenOn);
+    Log.i(TAG, "screen on: " + isScreenOn);
 
     if (isScreenOn == false) {
 

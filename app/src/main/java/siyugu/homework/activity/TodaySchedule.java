@@ -180,8 +180,8 @@ public class TodaySchedule extends AppCompatActivity {
       items.add(new EntryItem(e));
     }
     ItemAdaptor adaptor = new ItemAdaptor(this,
-        R.layout.list_item_view,
-        R.layout.listview_header_row,
+        R.layout.listview_item_event,
+        R.layout.listview_header_event,
         items);
     // TODO: maybe have a "Past" section as well
     mTodayEventsListView.setAdapter(adaptor);

@@ -1,4 +1,4 @@
-package siyugu.homework.activity;
+package siyugu.homework.fragment;
 
 import android.app.Dialog;
 import android.app.DialogFragment;

@@ -34,6 +34,9 @@ import java.io.IOException;
 
 import siyugu.homework.R;
 import siyugu.homework.event.Event;
+import siyugu.homework.fragment.DatePickerFragment;
+import siyugu.homework.fragment.TimePickerFragment;
+import siyugu.homework.fragment.TodayFragment;
 import siyugu.homework.util.BundleKeys;
 import siyugu.homework.util.TimeUtil;
 
@@ -72,9 +75,9 @@ public class EditModeActivity extends AppCompatActivity {
     initializeNumberPicker();
 
     Intent intent = getIntent();
-    if (intent.hasExtra(TodaySchedule.EDIT_EVENT_EXTRA)) {
+    if (intent.hasExtra(TodayFragment.EDIT_EVENT_EXTRA)) {
       mSubmitBtn.setText(R.string.save_modification_text);
-      mEventEditting = (Event) intent.getSerializableExtra(TodaySchedule.EDIT_EVENT_EXTRA);
+      mEventEditting = (Event) intent.getSerializableExtra(TodayFragment.EDIT_EVENT_EXTRA);
       initializeUiValuesWithEvent(mEventEditting);
     }
   }
@@ -344,7 +347,7 @@ public class EditModeActivity extends AppCompatActivity {
     }
 
     Intent returnIntent = new Intent();
-    returnIntent.putExtra(TodaySchedule.NEW_EVENT_EXTRA, mEventEditting);
+    returnIntent.putExtra(TodayFragment.NEW_EVENT_EXTRA, mEventEditting);
     setResult(Activity.RESULT_OK, returnIntent);
     finish();
   }

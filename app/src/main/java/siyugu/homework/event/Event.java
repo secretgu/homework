@@ -243,7 +243,6 @@ public class Event implements Serializable {
     this.completed = completed;
   }
 
-  // TODO: delete Builder if it turns out to be not useful
   public Builder toBuilder() {
     return new Builder(id).setTitle(title).setTypeOfWork(typeOfWork).setDescription(description)
         .setDueDate(dueDate)

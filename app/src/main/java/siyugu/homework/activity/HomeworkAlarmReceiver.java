@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import siyugu.homework.event.Event;
+import siyugu.homework.fragment.TodayFragment;
 
 public class HomeworkAlarmReceiver extends BroadcastReceiver {
   private static final String TAG = "HomeworkAlarmReceiver";
@@ -16,10 +17,10 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     Log.i(TAG, "Receive broadcast");
-    if (!intent.hasExtra(TodaySchedule.ALARM_EVENT_EXTRA)) {
+    if (!intent.hasExtra(TodayFragment.ALARM_EVENT_EXTRA)) {
       return;
     }
-    Event e = (Event) intent.getSerializableExtra(TodaySchedule.ALARM_EVENT_EXTRA);
+    Event e = (Event) intent.getSerializableExtra(TodayFragment.ALARM_EVENT_EXTRA);
     NotificationCompat.Builder mBuilder =
         new NotificationCompat.Builder(context)
             .setSmallIcon(android.R.drawable.stat_notify_chat)

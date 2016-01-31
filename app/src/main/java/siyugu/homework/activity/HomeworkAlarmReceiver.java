@@ -1,11 +1,11 @@
 package siyugu.homework.activity;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import siyugu.homework.event.Event;
@@ -21,8 +21,8 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
       return;
     }
     Event e = (Event) intent.getSerializableExtra(TodayFragment.ALARM_EVENT_EXTRA);
-    NotificationCompat.Builder mBuilder =
-        new NotificationCompat.Builder(context)
+    Notification.Builder mBuilder =
+        new Notification.Builder(context)
             .setSmallIcon(android.R.drawable.stat_notify_chat)
             .setContentTitle("Homework Notifications")
             .setContentText(String

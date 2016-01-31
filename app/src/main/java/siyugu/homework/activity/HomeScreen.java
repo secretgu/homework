@@ -12,7 +12,6 @@ import siyugu.homework.fragment.ReferenceFragment;
 import siyugu.homework.fragment.SimplePagerAdapter;
 import siyugu.homework.fragment.TodayFragment;
 
-
 public class HomeScreen extends AppCompatActivity {
 
   @Override

@@ -1,14 +1,14 @@
 package siyugu.homework.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import siyugu.homework.R;
 
-public class ReferenceFragment extends Fragment {
+public class ReferenceFragment extends ListFragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -2,6 +2,8 @@ package siyugu.homework.event;
 
 import android.support.annotation.Nullable;
 
+import com.google.common.base.Strings;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
@@ -177,7 +179,9 @@ public class Event implements Serializable {
     this.title = title;
     this.typeOfWork = typeOfWork;
     this.description = description;
-    this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDate);
+    if (!Strings.isNullOrEmpty(dueDate)) {
+      this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDate);
+    }
     this.doDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(doDate);
     this.picturePath = picturePath;
     this.startTime = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime(startTime);

@@ -42,4 +42,10 @@
     </string-array>
 
     <string name="set">Set</string>
+
+    <string-array name="reference_links">
+        <item>www.google.com</item>
+        <item>www.facebook.com</item>
+        <item>www.twitter.com</item>
+    </string-array>
 </resources>

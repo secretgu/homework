@@ -14,24 +14,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.R;
 import siyugu.homework.activity.EditModeActivity;
+import siyugu.homework.activity.HomeScreen;
 import siyugu.homework.activity.HomeworkAlarmReceiver;
 import siyugu.homework.event.Event;
 import siyugu.homework.event.EventDB;
+import siyugu.homework.event.ItemAdapter;
+import siyugu.homework.event.ItemAdapter.EntryItem;
+import siyugu.homework.event.ItemAdapter.Item;
+import siyugu.homework.event.ItemAdapter.SectionItem;
 import siyugu.homework.util.TimeUtil;
 
 public class TodayFragment extends Fragment {
@@ -41,23 +42,21 @@ public class TodayFragment extends Fragment {
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
   public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
   public final static String ALARM_EVENT_EXTRA = "ALARM_EVENT_EXTRA";
-  public final static String EVENTS_FILE_PATH = "homework_events.ser";
 
   private EventDB eventDB;
   private ListView mTodayEventsListView;
   private AlarmManager mAlarmManager;
 
   @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  public void onActivityCreated(Bundle savedInstanceBundle) {
+    super.onActivityCreated(savedInstanceBundle);
 
-    try {
-      eventDB = new EventDB(getEventsFilePath());
-    } catch (Exception e) {
-      Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
-      throw new RuntimeException(e);
+    if (BuildConfig.DEBUG) {
+      if (!(getActivity() instanceof HomeScreen)) {
+        throw new AssertionError();
+      }
     }
-
+    eventDB = ((HomeScreen) getActivity()).getEventDB();
     mAlarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
   }
 
@@ -108,18 +107,6 @@ public class TodayFragment extends Fragment {
     Log.i(TAG, "onResume");
     super.onResume();
     fillListView();
-  }
-
-  @Override
-  public void onStop() {
-    Log.i(TAG, "onStop");
-    try {
-      eventDB.flush();
-    } catch (IOException e) {
-      Log.e(TAG, "FATAL: not able to save data to " + EVENTS_FILE_PATH);
-      throw new RuntimeException(e);
-    }
-    super.onStop();
   }
 
   public void eventLongClick(final Event e) {
@@ -174,12 +161,6 @@ public class TodayFragment extends Fragment {
     }
   }
 
-  private File getEventsFilePath() {
-    File eventsFile = new File(getActivity().getFilesDir(), EVENTS_FILE_PATH);
-    Log.i(TAG, eventsFile.getAbsolutePath());
-    return eventsFile;
-  }
-
   private void scheduleNotification(Event e) {
     Intent intent = new Intent(getActivity(), HomeworkAlarmReceiver.class);
     intent.putExtra(ALARM_EVENT_EXTRA, e);
@@ -210,110 +191,11 @@ public class TodayFragment extends Fragment {
       // TODO: sort by start time
       items.add(new EntryItem(e));
     }
-    ItemAdaptor adaptor = new ItemAdaptor(getActivity(),
+    ItemAdapter adaptor = new ItemAdapter(getActivity(),
         R.layout.listview_item_event,
         R.layout.listview_header_event,
         items);
     // TODO: maybe have a "Past" section as well
     mTodayEventsListView.setAdapter(adaptor);
-  }
-
-  private interface Item {
-    public boolean isSection();
-  }
-
-  private static class SectionItem implements Item {
-    private String headerText;
-
-    public SectionItem(String header) {
-      this.headerText = header;
-    }
-
-    public String getHeaderText() {
-      return headerText;
-    }
-
-    @Override
-    public boolean isSection() {
-      return true;
-    }
-  }
-
-  private static class EntryItem implements Item {
-    private Event event;
-
-    public EntryItem(Event event) {
-      this.event = event;
-    }
-
-    public Event getEvent() {
-      return event;
-    }
-
-    @Override
-    public boolean isSection() {
-      return false;
-    }
-  }
-
-  private static class ItemAdaptor extends ArrayAdapter<Item> {
-    private final Context context;
-    private final int entryLayoutResourceId;
-    private final int sectionLayoutResourceId;
-    private final List<Item> data;
-
-
-    public ItemAdaptor(Context context,
-                       int entryLayoutResourceId,
-                       int sectionLayoutResourceId,
-                       List<Item> data) {
-      super(context, 0, data);
-
-      this.context = context;
-      this.entryLayoutResourceId = entryLayoutResourceId;
-      this.sectionLayoutResourceId = sectionLayoutResourceId;
-      this.data = data;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      View view = convertView;
-      Item item = data.get(position);
-
-      if (item.isSection()) {
-        return getSectionView((SectionItem) item, parent, view);
-      } else {
-        return getEntryView((EntryItem) item, parent, view);
-      }
-    }
-
-    private View getSectionView(SectionItem item, ViewGroup parent, View view) {
-      LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-      view = inflater.inflate(sectionLayoutResourceId, parent, false);
-      TextView header = (TextView) view.findViewById(R.id.txtHeader);
-      header.setText(item.getHeaderText());
-      return view;
-    }
-
-    private View getEntryView(EntryItem item, ViewGroup parent, View view) {
-      LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-      view = inflater.inflate(entryLayoutResourceId, parent, false);
-
-      TextView mEventTypeText = (TextView) view.findViewById(R.id.event_type_item);
-      CheckBox mTitleText = (CheckBox) view.findViewById(R.id.event_title_item);
-      TextView mStartTimeText = (TextView) view.findViewById(R.id.start_time_text_item);
-      TextView mTimePermittedText = (TextView) view.findViewById(R.id.time_permitted_text_item);
-
-      Event e = item.getEvent();
-      mEventTypeText.setText(e.getTypeOfWork().toString());
-      mTitleText.setText(e.getTitle());
-      mTitleText.setChecked(e.getCompleted());
-      mTimePermittedText.setText(
-          String.format("%d hr %d min",
-              e.getPermittedTime().getHours(),
-              e.getPermittedTime().getMinutes()));
-      mStartTimeText.setText(TimeUtil.LOCALTIME_FORMATTER.print(e.getStartTime()));
-      return view;
-    }
   }
 }

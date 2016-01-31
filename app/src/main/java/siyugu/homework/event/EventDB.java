@@ -177,4 +177,8 @@ public class EventDB {
     }
     return upcomingEvents;
   }
+
+  public List<Event> getAllEvents() {
+    return ImmutableList.copyOf(allEvents);
+  }
 }

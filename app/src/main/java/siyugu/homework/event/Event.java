@@ -9,6 +9,7 @@ import org.joda.time.LocalTime;
 import org.joda.time.Period;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import siyugu.homework.BuildConfig;
 import siyugu.homework.util.TimeUtil;
@@ -251,7 +252,14 @@ public class Event implements Serializable {
         .setWarningTime(warningTime).setRepeatPattern(repeatPattern).setCompleted(completed);
   }
 
-  public static final class Builder {
+  public static class StartTimeComparator implements Comparator<Event> {
+    @Override
+    public int compare(Event lhs, Event rhs) {
+      return lhs.startTime.isBefore(rhs.startTime) ? -1 : 1;
+    }
+  }
+
+  public static class Builder {
     private long id;
     private String title;
     private TypeOfWork typeOfWork;

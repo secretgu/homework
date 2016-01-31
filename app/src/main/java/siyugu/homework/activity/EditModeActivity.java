@@ -267,20 +267,7 @@ public class EditModeActivity extends AppCompatActivity {
       return;
     }
 
-    Bitmap bm;
-    BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inJustDecodeBounds = true;
-    BitmapFactory.decodeFile(mCurrentPhotoPath, options);
-    final int REQUIRED_SIZE = 200;
-    int scale = 1;
-    while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-      scale *= 2;
-    options.inSampleSize = scale;
-    options.inJustDecodeBounds = false;
-    bm = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
-
-    mPhotoAdded.setImageBitmap(bm);
+    mPhotoAdded.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
   }
 
   public void showDateTimePickerDialog(View view) {

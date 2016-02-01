@@ -298,7 +298,9 @@ public class Event implements Serializable {
     }
 
     public Builder setDueDate(String dueDateText) {
-      this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDateText);
+      if (!Strings.isNullOrEmpty(dueDateText)) {
+        this.dueDate = TimeUtil.LOCALDATE_FORMATTER.parseLocalDate(dueDateText);
+      }
       return this;
     }
 

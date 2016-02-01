@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.os.PowerManager;
 import android.util.Log;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+
 import siyugu.homework.event.Event;
 import siyugu.homework.fragment.TodayFragment;
 
@@ -21,12 +24,15 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
       return;
     }
     Event e = (Event) intent.getSerializableExtra(TodayFragment.ALARM_EVENT_EXTRA);
+    int minuteToStart = e.getWarningTime().getMinute();
+    Duration timeLeft = new Duration(DateTime.now(), e.getDoDate().toDateTime(e.getStartTime()));
+    minuteToStart = Math.min(minuteToStart, (int) timeLeft.getStandardMinutes());
     Notification.Builder mBuilder =
         new Notification.Builder(context)
             .setSmallIcon(android.R.drawable.stat_notify_chat)
             .setContentTitle("Homework Notifications")
             .setContentText(String
-                .format("%s starts in %d min(s)", e.getTitle(), e.getWarningTime().getMinute()));
+                .format("%s starts in %d min(s)", e.getTitle(), minuteToStart));
     mBuilder.setAutoCancel(true);
 
     NotificationManager mNotificationManager =

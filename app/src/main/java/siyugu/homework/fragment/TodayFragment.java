@@ -20,6 +20,7 @@ import android.widget.ListView;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import siyugu.homework.BuildConfig;
@@ -167,8 +168,15 @@ public class TodayFragment extends Fragment {
     PendingIntent pendingIntent = PendingIntent
         .getBroadcast(getActivity(), (int) e.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-    DateTime timeToFire = e.getDoDate().toDateTime(e.getStartTime())
-        .minusMinutes(e.getWarningTime().getMinute());
+    DateTime timeToDo = e.getDoDate().toDateTime(e.getStartTime());
+    DateTime timeToFire = timeToDo.minusMinutes(e.getWarningTime().getMinute());
+    if (timeToDo.isBefore(DateTime.now())) {
+      Log.i(TAG,
+          String.format(
+              "Time to do is in past %s",
+              timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+      return;
+    }
     Log.i(TAG,
         String.format("Alarm for event id %d schedule at %s",
             e.getId(),
@@ -181,21 +189,24 @@ public class TodayFragment extends Fragment {
 
   private void fillListView() {
     List<Item> items = new ArrayList<Item>();
+
     items.add(new SectionItem("Now"));
-    for (Event e : eventDB.getNowEvents()) {
-      // TODO: sort by start time
+    List<Event> nowEvents = eventDB.getNowEvents();
+    Collections.sort(nowEvents, new Event.StartTimeComparator());
+    for (Event e : nowEvents) {
       items.add(new EntryItem(e));
     }
+
     items.add(new SectionItem("Upcoming"));
-    for (Event e : eventDB.getUpcomingEvents()) {
-      // TODO: sort by start time
+    List<Event> upcomingEvents = eventDB.getUpcomingEvents();
+    Collections.sort(upcomingEvents, new Event.StartTimeComparator());
+    for (Event e : upcomingEvents) {
       items.add(new EntryItem(e));
     }
     ItemAdapter adaptor = new ItemAdapter(getActivity(),
         R.layout.listview_item_event,
         R.layout.listview_header_event,
         items);
-    // TODO: maybe have a "Past" section as well
     mTodayEventsListView.setAdapter(adaptor);
   }
 }

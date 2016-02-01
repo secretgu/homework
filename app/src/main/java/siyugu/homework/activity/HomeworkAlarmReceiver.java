@@ -1,11 +1,11 @@
 package siyugu.homework.activity;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import org.joda.time.DateTime;
@@ -23,16 +23,24 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
     if (!intent.hasExtra(TodayFragment.ALARM_EVENT_EXTRA)) {
       return;
     }
+
     Event e = (Event) intent.getSerializableExtra(TodayFragment.ALARM_EVENT_EXTRA);
     int minuteToStart = e.getWarningTime().getMinute();
     Duration timeLeft = new Duration(DateTime.now(), e.getDoDate().toDateTime(e.getStartTime()));
+    Log.d(TAG, String.format(
+        "warning ahead: %d, time left: %d", minuteToStart, (int) timeLeft.getStandardMinutes()));
     minuteToStart = Math.min(minuteToStart, (int) timeLeft.getStandardMinutes());
-    Notification.Builder mBuilder =
-        new Notification.Builder(context)
+    String notifyText;
+    if (minuteToStart == 0) {
+      notifyText = String.format("%s is starting now", e.getTitle());
+    } else {
+      notifyText = String.format("%s is starting in %d min(s)", e.getTitle(), minuteToStart);
+    }
+    NotificationCompat.Builder mBuilder =
+        new NotificationCompat.Builder(context)
             .setSmallIcon(android.R.drawable.stat_notify_chat)
             .setContentTitle("Homework Notifications")
-            .setContentText(String
-                .format("%s starts in %d min(s)", e.getTitle(), minuteToStart));
+            .setContentText(notifyText);
     mBuilder.setAutoCancel(true);
 
     NotificationManager mNotificationManager =

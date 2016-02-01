@@ -175,6 +175,8 @@ public class TodayFragment extends Fragment {
           String.format(
               "Time to do is in past %s",
               timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+      Log.i(TAG, "Cancel alarm for event id " + (int) e.getId());
+      mAlarmManager.cancel(pendingIntent);
       return;
     }
     Log.i(TAG,

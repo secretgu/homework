@@ -2,6 +2,7 @@ package siyugu.homework.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import siyugu.homework.R;
 import siyugu.homework.event.EventDB;
 import siyugu.homework.fragment.CalendarFragment;
+import siyugu.homework.fragment.FragmentVisibleListener;
 import siyugu.homework.fragment.ReferenceFragment;
 import siyugu.homework.fragment.SimplePagerAdapter;
 import siyugu.homework.fragment.TodayFragment;
@@ -46,6 +48,24 @@ public class HomeScreen extends AppCompatActivity {
       Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
       throw new RuntimeException(e);
     }
+
+    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override
+      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+      }
+
+      @Override
+      public void onPageSelected(int position) {
+        Fragment fragment = (Fragment) adapter.instantiateItem(viewPager, position);
+        if (fragment != null && fragment instanceof FragmentVisibleListener) {
+          ((FragmentVisibleListener) fragment).fragmentBecameVisible();
+        }
+      }
+
+      @Override
+      public void onPageScrollStateChanged(int state) {
+      }
+    });
   }
 
   @Override

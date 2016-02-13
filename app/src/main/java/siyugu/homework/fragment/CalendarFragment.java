@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 
 import org.joda.time.LocalDate;
 
@@ -26,7 +25,7 @@ import siyugu.homework.event.ItemAdapter.Item;
 import siyugu.homework.util.TimeUtil;
 
 // List all events for now
-public class CalendarFragment extends ListFragment {
+public class CalendarFragment extends ListFragment implements FragmentVisibleListener {
   private static final String TAG = "CalendarFragment";
   private EventDB eventDB;
 
@@ -44,9 +43,21 @@ public class CalendarFragment extends ListFragment {
   }
 
   @Override
+  public void onViewCreated(View view, Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+  }
+
+  @Override
   public void onResume() {
     Log.i(TAG, "onResume");
     super.onResume();
+    fillListView();
+  }
+
+  @Override
+  public void fragmentBecameVisible() {
+    Log.i(TAG, "become visible");
+    // not efficient, but for a toy app...
     fillListView();
   }
 

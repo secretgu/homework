@@ -42,7 +42,7 @@ import siyugu.homework.event.ItemAdapter.Item;
 import siyugu.homework.event.ItemAdapter.SectionItem;
 import siyugu.homework.util.TimeUtil;
 
-public class TodayFragment extends Fragment {
+public class TodayFragment extends Fragment implements FragmentVisibleListener {
   private final static String TAG = "TodayFragment";
   private final static int NEW_EVENT_REQUEST = 1;
 
@@ -115,6 +115,13 @@ public class TodayFragment extends Fragment {
   public void onResume() {
     Log.i(TAG, "onResume");
     super.onResume();
+    fillListView();
+  }
+
+  @Override
+  public void fragmentBecameVisible() {
+    Log.i(TAG, "become visible");
+    // not efficient, but for a toy app...
     fillListView();
   }
 

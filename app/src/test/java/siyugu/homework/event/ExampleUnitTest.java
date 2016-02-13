@@ -1,5 +1,6 @@
 package siyugu.homework.event;
 
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Test;
@@ -17,34 +18,17 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
 public class ExampleUnitTest {
-  @Test
-  public void addition_isCorrect() throws Exception {
-    assertEquals(4, 2 + 2);
-  }
 
   @Test
   public void testNowEventsPredicate() throws Exception {
-    EventDB.NowEventsPredicate predicate = new EventDB.NowEventsPredicate();
-    LocalTime currentTime = new LocalTime();
-
     LocalTime onePm = TimeUtil.LOCALTIME_FORMATTER.parseLocalTime("01:00 PM");
-    assertFalse(predicate.isNowEvent(onePm, onePm.minusMinutes(1)));
-    assertFalse(predicate.isNowEvent(currentTime, currentTime.minusHours(1)));
-    assertFalse(predicate.isNowEvent(currentTime, currentTime.minusHours(2)));
-    assertTrue(predicate.isNowEvent(currentTime, currentTime.minusHours(0)));
-    assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(0)));
-    assertTrue(predicate.isNowEvent(currentTime, currentTime.plusHours(2)));
-    assertFalse(predicate.isNowEvent(currentTime, currentTime.plusHours(4)));
-    assertFalse(predicate.isNowEvent(currentTime, currentTime.plusHours(5)));
-  }
-
-  @Test
-  public void testTodayEventsPredicate() throws Exception {
-    EventDB.TodayEventsPredicate predicate = new EventDB.TodayEventsPredicate();
-    LocalDate today = new LocalDate();
-
-    assertTrue(predicate.isTodayEvent(today, today.minusDays(0)));
-    assertFalse(predicate.isTodayEvent(today, today.minusDays(1)));
-    assertFalse(predicate.isTodayEvent(today, today.plusDays(1)));
+    LocalTime plus1ms = onePm.plusMillis(1);
+    LocalTime minus1ms = onePm.minusMillis(1);
+    Duration d = new Duration(onePm.toDateTimeToday(), plus1ms.toDateTimeToday());
+    Duration dm = new Duration(onePm.toDateTimeToday(), minus1ms.toDateTimeToday());
+    System.out.println(d.getMillis());
+    System.out.println(d.getStandardMinutes());
+    System.out.println(dm.getMillis());
+    System.out.println(dm.getStandardMinutes());
   }
 }

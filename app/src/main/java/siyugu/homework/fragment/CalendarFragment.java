@@ -94,8 +94,4 @@ public class CalendarFragment extends ListFragment {
 
     return eventsByDate;
   }
-
-  @Override
-  public void onListItemClick(ListView l, View v, int position, long id) {
-  }
 }

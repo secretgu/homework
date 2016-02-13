@@ -17,7 +17,12 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +35,7 @@ import siyugu.homework.activity.HomeScreen;
 import siyugu.homework.activity.HomeworkAlarmReceiver;
 import siyugu.homework.event.Event;
 import siyugu.homework.event.EventDB;
+import siyugu.homework.event.EventPredicates;
 import siyugu.homework.event.ItemAdapter;
 import siyugu.homework.event.ItemAdapter.EntryItem;
 import siyugu.homework.event.ItemAdapter.Item;
@@ -62,7 +68,9 @@ public class TodayFragment extends Fragment {
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater,
+                           ViewGroup container,
+                           Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_today, container, false);
   }
 
@@ -189,18 +197,21 @@ public class TodayFragment extends Fragment {
         pendingIntent);
   }
 
+  //--------------------------Fill in event list--------------------------
   private void fillListView() {
     List<Item> items = new ArrayList<Item>();
+    List<Event> todayEvents = eventDB.getTodayEvents();
+    LocalTime currentTime = new LocalTime();
 
-    items.add(new SectionItem("Now"));
-    List<Event> nowEvents = eventDB.getNowEvents();
+    items.add(new SectionItem("Yet To Complete"));
+    List<Event> nowEvents = getYetToCompleteEvents(todayEvents, currentTime);
     Collections.sort(nowEvents, new Event.StartTimeComparator());
     for (Event e : nowEvents) {
       items.add(new EntryItem(e));
     }
 
     items.add(new SectionItem("Upcoming"));
-    List<Event> upcomingEvents = eventDB.getUpcomingEvents();
+    List<Event> upcomingEvents = getUpcomingIncompleteEvents(todayEvents, currentTime);
     Collections.sort(upcomingEvents, new Event.StartTimeComparator());
     for (Event e : upcomingEvents) {
       items.add(new EntryItem(e));
@@ -210,5 +221,33 @@ public class TodayFragment extends Fragment {
         R.layout.listview_header_event,
         items);
     mTodayEventsListView.setAdapter(adaptor);
+  }
+
+  @VisibleForTesting
+  static List<Event> getYetToCompleteEvents(List<Event> todayEvents, LocalTime currentTime) {
+    List<Event> nowEvents = new ArrayList<Event>();
+    Predicate<Event> yetToCompleteEventsPredicate = Predicates
+        .and(new EventPredicates.NowEventsPredicate(currentTime),
+            new EventPredicates.IncompleteEventsPredicate());
+    for (Event e : todayEvents) {
+      if (yetToCompleteEventsPredicate.apply(e)) {
+        nowEvents.add(e);
+      }
+    }
+    return nowEvents;
+  }
+
+  @VisibleForTesting
+  static List<Event> getUpcomingIncompleteEvents(List<Event> todayEvents, LocalTime currentTime) {
+    List<Event> upcomingIncompleteEvents = new ArrayList<Event>();
+    Predicate<Event> upcomingIncompletePredicate = Predicates
+        .and(new EventPredicates.UpcomingEventsPredicate(currentTime),
+            new EventPredicates.IncompleteEventsPredicate());
+    for (Event e : todayEvents) {
+      if (upcomingIncompletePredicate.apply(e)) {
+        upcomingIncompleteEvents.add(e);
+      }
+    }
+    return upcomingIncompleteEvents;
   }
 }

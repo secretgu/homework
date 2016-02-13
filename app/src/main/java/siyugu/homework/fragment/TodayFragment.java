@@ -48,6 +48,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
   public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
+  public final static String VIEW_EVENT_EXTRA = "VIEW_EVENT_EXTRA";
   public final static String ALARM_EVENT_EXTRA = "ALARM_EVENT_EXTRA";
 
   private EventDB eventDB;
@@ -82,7 +83,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
     mTodayEventsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
       @Override
       public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i(TAG, "long clicked");
+        Log.i(TAG, "long click");
         Item item = (Item) mTodayEventsListView.getAdapter().getItem(position);
         if (item.isSection()) {
           // nothing needs to be done
@@ -91,6 +92,19 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
           eventLongClick(e);
         }
         return true;
+      }
+    });
+    mTodayEventsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.i(TAG, "normal click");
+        Item item = (Item) mTodayEventsListView.getAdapter().getItem(position);
+        if (item.isSection()) {
+          // nothing needs to be done
+        } else {
+          Event e = ((EntryItem) item).getEvent();
+          eventClick(e);
+        }
       }
     });
 
@@ -123,6 +137,13 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
     Log.i(TAG, "become visible");
     // not efficient, but for a toy app...
     fillListView();
+  }
+
+  public void eventClick(final Event e) {
+    Log.i(TAG, e.getTitle() + " selected to be viewed");
+    Intent intent = new Intent(getActivity(), EditModeActivity.class);
+    intent.putExtra(VIEW_EVENT_EXTRA, e);
+    startActivity(intent);
   }
 
   public void eventLongClick(final Event e) {

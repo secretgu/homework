@@ -17,10 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -57,7 +60,9 @@ public class EditModeActivity extends AppCompatActivity {
   private EditText mDoDateText;
   private EditText mStartTimeText;
   private String mCurrentPhotoPath;
+  private ImageButton mAddPhotoBtn;
   private Button mSubmitBtn;
+  private Button mCancelBtn;
   private Event mEventEditting;
 
   @Override
@@ -78,7 +83,28 @@ public class EditModeActivity extends AppCompatActivity {
       mSubmitBtn.setText(R.string.save_modification_text);
       mEventEditting = (Event) intent.getSerializableExtra(TodayFragment.EDIT_EVENT_EXTRA);
       initializeUiValuesWithEvent(mEventEditting);
+    } else if (intent.hasExtra(TodayFragment.VIEW_EVENT_EXTRA)) {
+      Event eventViewing = (Event) intent.getSerializableExtra(TodayFragment.VIEW_EVENT_EXTRA);
+      initializeUiValuesWithEvent(eventViewing);
+      disableInteractionWithView();
     }
+  }
+
+  private void disableInteractionWithView() {
+    LinearLayout outmostLinearLayout = (LinearLayout) findViewById(R.id.outmost_linearlayout);
+    outmostLinearLayout.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+    mTitleText.setEnabled(false);
+    mDescriptionText.setEnabled(false);
+    mTypeOfWorkSpinner.setEnabled(false);
+    mWarningTimeSpinner.setEnabled(false);
+    mDueDateText.setEnabled(false);
+    mDoDateText.setEnabled(false);
+    mStartTimeText.setEnabled(false);
+    mHourPermittedPicker.setEnabled(false);
+    mMinutePermittedPicker.setEnabled(false);
+    mAddPhotoBtn.setEnabled(false);
+    mSubmitBtn.setVisibility(View.INVISIBLE);
+    mCancelBtn.setVisibility(View.INVISIBLE);
   }
 
   private void initializeUiValuesWithEvent(Event e) {
@@ -114,6 +140,8 @@ public class EditModeActivity extends AppCompatActivity {
     mDoDateText = (EditText) findViewById(R.id.edit_do_date);
     mStartTimeText = (EditText) findViewById(R.id.edit_start_time);
     mSubmitBtn = (Button) findViewById(R.id.add_event_btn);
+    mCancelBtn = (Button) findViewById(R.id.cancel_add_btn);
+    mAddPhotoBtn = (ImageButton) findViewById(R.id.add_photo_btn);
   }
 
   private void initializeSpinners() {

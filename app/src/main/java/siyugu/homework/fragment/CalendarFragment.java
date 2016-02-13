@@ -1,9 +1,14 @@
 package siyugu.homework.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import org.joda.time.LocalDate;
 
@@ -16,6 +21,7 @@ import java.util.TreeMap;
 
 import siyugu.homework.BuildConfig;
 import siyugu.homework.R;
+import siyugu.homework.activity.EditModeActivity;
 import siyugu.homework.activity.HomeScreen;
 import siyugu.homework.event.Event;
 import siyugu.homework.event.EventDB;
@@ -45,6 +51,35 @@ public class CalendarFragment extends ListFragment implements FragmentVisibleLis
   @Override
   public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+
+    ListView listview = getListView();
+    listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+      @Override
+      public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.i(TAG, "long click");
+        Item item = (Item) parent.getAdapter().getItem(position);
+        if (item.isSection()) {
+          // nothing needs to be done
+        } else {
+          Event e = ((EntryItem) item).getEvent();
+          eventLongClick(e);
+        }
+        return true;
+      }
+    });
+    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.i(TAG, "normal click");
+        Item item = (Item) parent.getAdapter().getItem(position);
+        if (item.isSection()) {
+          // nothing needs to be done
+        } else {
+          Event e = ((EntryItem) item).getEvent();
+          eventClick(e);
+        }
+      }
+    });
   }
 
   @Override
@@ -59,6 +94,38 @@ public class CalendarFragment extends ListFragment implements FragmentVisibleLis
     Log.i(TAG, "become visible");
     // not efficient, but for a toy app...
     fillListView();
+  }
+
+  public void eventClick(final Event e) {
+    Log.i(TAG, e.getTitle() + " selected to be viewed");
+    Intent intent = new Intent(getActivity(), EditModeActivity.class);
+    intent.putExtra(TodayFragment.VIEW_EVENT_EXTRA, e);
+    startActivity(intent);
+  }
+
+  public void eventLongClick(final Event e) {
+    final CharSequence[] items = getResources().getStringArray(R.array.event_longclick_menus);
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    builder.setTitle(R.string.modify_event_menu_title);
+    builder.setItems(items, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int item) {
+        if (items[item].equals(getResources().getString(R.string.mark_as_completed_menuitem))) {
+          Log.i(TAG, e.getTitle() + " change completion status");
+          eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());
+          fillListView();
+        } else if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
+          Log.i(TAG, e.getTitle() + " selected to be modified");
+          Intent intent = new Intent(getActivity(), EditModeActivity.class);
+          intent.putExtra(TodayFragment.EDIT_EVENT_EXTRA, e);
+          startActivityForResult(intent, TodayFragment.NEW_EVENT_REQUEST);
+        } else if (items[item].equals(getResources().getString(R.string.cancel_menuitem))) {
+          dialog.dismiss();
+        }
+      }
+    });
+    builder.show();
   }
 
   private void fillListView() {

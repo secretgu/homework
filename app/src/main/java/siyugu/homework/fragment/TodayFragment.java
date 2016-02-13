@@ -44,7 +44,7 @@ import siyugu.homework.util.TimeUtil;
 
 public class TodayFragment extends Fragment implements FragmentVisibleListener {
   private final static String TAG = "TodayFragment";
-  private final static int NEW_EVENT_REQUEST = 1;
+  public final static int NEW_EVENT_REQUEST = 1;
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
   public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
@@ -155,11 +155,9 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
       @Override
       public void onClick(DialogInterface dialog, int item) {
         if (items[item].equals(getResources().getString(R.string.mark_as_completed_menuitem))) {
-          Log.i(TAG, e.getTitle() + " mark as completed");
-          if (!e.getCompleted()) {
-            eventDB.addEvent(e.toBuilder().setCompleted(true).build());
-            fillListView();
-          }
+          Log.i(TAG, e.getTitle() + " change completion status");
+          eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());
+          fillListView();
         } else if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
           Log.i(TAG, e.getTitle() + " selected to be modified");
           Intent intent = new Intent(getActivity(), EditModeActivity.class);

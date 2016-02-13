@@ -30,7 +30,6 @@ public class Event implements Serializable {
   private LocalTime startTime;
   private Period permittedTime;
   private WarningTime warningTime;
-  private RepeatPattern repeatPattern;
   private boolean completed;
 
   // TODO: looks error-prone. Might switch to allow setters for Event.
@@ -59,24 +58,6 @@ public class Event implements Serializable {
     PERSONAL("personal");
 
     TypeOfWork(String text) {
-      this.text = text;
-    }
-
-    @Override
-    public String toString() {
-      return text;
-    }
-
-    private String text;
-  }
-
-  public enum RepeatPattern {
-    NO_REPEAT("no repeat"),
-    DAILY("daily"),
-    WEEKDAY("weekday"),
-    WEEKEND("weekend");
-
-    RepeatPattern(String text) {
       this.text = text;
     }
 
@@ -154,10 +135,6 @@ public class Event implements Serializable {
     return warningTime;
   }
 
-  public RepeatPattern getRepeatPattern() {
-    return repeatPattern;
-  }
-
   public boolean getCompleted() {
     return completed;
   }
@@ -174,8 +151,7 @@ public class Event implements Serializable {
       String startTime,
       int permittedHour,
       int permittedMinute,
-      WarningTime warningTime,
-      RepeatPattern repeatPattern
+      WarningTime warningTime
   ) {
     this.title = title;
     this.typeOfWork = typeOfWork;
@@ -191,7 +167,6 @@ public class Event implements Serializable {
         0 /* seconds */,
         0 /* millis */);
     this.warningTime = warningTime;
-    this.repeatPattern = repeatPattern;
     this.completed = false;
 
     this.id = getLastId();
@@ -211,7 +186,6 @@ public class Event implements Serializable {
     this.startTime = e.startTime;
     this.permittedTime = e.permittedTime;
     this.warningTime = e.warningTime;
-    this.repeatPattern = e.repeatPattern;
     this.completed = e.completed;
   }
 
@@ -227,7 +201,6 @@ public class Event implements Serializable {
       LocalTime startTime,
       Period permittedTime,
       WarningTime warningTime,
-      RepeatPattern repeatPattern,
       boolean completed
   ) {
     this.id = id;
@@ -240,7 +213,6 @@ public class Event implements Serializable {
     this.startTime = startTime;
     this.permittedTime = permittedTime;
     this.warningTime = warningTime;
-    this.repeatPattern = repeatPattern;
     this.completed = completed;
   }
 
@@ -249,7 +221,7 @@ public class Event implements Serializable {
         .setDueDate(dueDate)
         .setDoDate(doDate).setStartTime(startTime).setPicturePath(picturePath)
         .setPermittedTime(permittedTime)
-        .setWarningTime(warningTime).setRepeatPattern(repeatPattern).setCompleted(completed);
+        .setWarningTime(warningTime).setCompleted(completed);
   }
 
   public static class StartTimeComparator implements Comparator<Event> {
@@ -270,7 +242,6 @@ public class Event implements Serializable {
     private LocalTime startTime;
     private Period permittedTime;
     private WarningTime warningTime;
-    private RepeatPattern repeatPattern;
     private boolean completed;
 
     private Builder(long id) {
@@ -344,11 +315,6 @@ public class Event implements Serializable {
       return this;
     }
 
-    public Builder setRepeatPattern(RepeatPattern repeatPattern) {
-      this.repeatPattern = repeatPattern;
-      return this;
-    }
-
     public Builder setCompleted(boolean completed) {
       this.completed = completed;
       return this;
@@ -366,7 +332,6 @@ public class Event implements Serializable {
           startTime,
           permittedTime,
           warningTime,
-          repeatPattern,
           completed);
     }
   }

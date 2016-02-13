@@ -49,7 +49,6 @@ public class EditModeActivity extends AppCompatActivity {
   private EditText mTitleText;
   private Spinner mTypeOfWorkSpinner;
   private Spinner mWarningTimeSpinner;
-  private Spinner mRepeatSpinner;
   private NumberPicker mHourPermittedPicker;
   private NumberPicker mMinutePermittedPicker;
   private ImageView mPhotoAdded;
@@ -86,7 +85,6 @@ public class EditModeActivity extends AppCompatActivity {
     mTitleText.setText(e.getTitle());
     mTypeOfWorkSpinner.setSelection(e.getTypeOfWork().ordinal());
     mWarningTimeSpinner.setSelection(e.getWarningTime().ordinal());
-    mRepeatSpinner.setSelection(e.getRepeatPattern().ordinal());
     if (e.getDescription() != null) {
       mDescriptionText.setText(e.getDescription());
     }
@@ -108,7 +106,6 @@ public class EditModeActivity extends AppCompatActivity {
     mTitleText = (EditText) findViewById(R.id.title_edit);
     mTypeOfWorkSpinner = (Spinner) findViewById(R.id.type_of_work_selector);
     mWarningTimeSpinner = (Spinner) findViewById(R.id.warning_time_selector);
-    mRepeatSpinner = (Spinner) findViewById(R.id.repeat_selector);
     mHourPermittedPicker = (NumberPicker) findViewById(R.id.hour_permitted_picker);
     mMinutePermittedPicker = (NumberPicker) findViewById(R.id.minute_permitted_picker);
     mPhotoAdded = (ImageView) findViewById(R.id.photo_added);
@@ -135,14 +132,6 @@ public class EditModeActivity extends AppCompatActivity {
             Event.WarningTime.values());
     warningTimeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mWarningTimeSpinner.setAdapter(warningTimeAdaptor);
-
-    ArrayAdapter<Event.RepeatPattern> repeatAdaptor =
-        new ArrayAdapter<Event.RepeatPattern>(
-            this,
-            android.R.layout.simple_spinner_item,
-            Event.RepeatPattern.values());
-    repeatAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    mRepeatSpinner.setAdapter(repeatAdaptor);
   }
 
   private void initializeNumberPicker() {
@@ -328,8 +317,7 @@ public class EditModeActivity extends AppCompatActivity {
           mStartTimeText.getText().toString(),
           mHourPermittedPicker.getValue(),
           mMinutePermittedPicker.getValue(),
-          (Event.WarningTime) mWarningTimeSpinner.getSelectedItem(),
-          (Event.RepeatPattern) mRepeatSpinner.getSelectedItem()
+          (Event.WarningTime) mWarningTimeSpinner.getSelectedItem()
       );
     } else {
       mEventEditting = mEventEditting.toBuilder()
@@ -342,7 +330,6 @@ public class EditModeActivity extends AppCompatActivity {
           .setStartTime(mStartTimeText.getText().toString())
           .setPermittedTime(mHourPermittedPicker.getValue(), mMinutePermittedPicker.getValue())
           .setWarningTime((Event.WarningTime) mWarningTimeSpinner.getSelectedItem())
-          .setRepeatPattern((Event.RepeatPattern) mRepeatSpinner.getSelectedItem())
           .build();
     }
 

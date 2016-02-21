@@ -229,7 +229,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
     List<Event> todayEvents = eventDB.getTodayEvents();
     LocalTime currentTime = new LocalTime();
 
-    items.add(new SectionItem("Yet To Complete"));
+    items.add(new SectionItem("Uncompleted"));
     List<Event> nowEvents = getYetToCompleteEvents(todayEvents, currentTime);
     Collections.sort(nowEvents, new Event.StartTimeComparator());
     for (Event e : nowEvents) {

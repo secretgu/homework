@@ -16,6 +16,7 @@ import siyugu.homework.R;
 public class ReferenceFragment extends ListFragment {
   private static final String TAG = "ReferenceFragment";
   private ArrayAdapter<CharSequence> mAdapter;
+  private String[] mUrls;
 
   @Override
   public void onActivityCreated(Bundle savedInstanceBundle) {
@@ -23,14 +24,16 @@ public class ReferenceFragment extends ListFragment {
 
     mAdapter = ArrayAdapter.createFromResource(
         getActivity(),
-        R.array.reference_links,
+        R.array.reference_links_name,
         android.R.layout.simple_list_item_1);
     setListAdapter(mAdapter);
+
+    mUrls = getActivity().getResources().getStringArray(R.array.reference_links_value);
   }
 
   @Override
   public void onListItemClick(ListView l, View v, int position, long id) {
-    String url = mAdapter.getItem(position).toString();
+    String url = mUrls[position];
     String canonicalUrl = URLUtil.guessUrl(url);
     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(canonicalUrl));
     if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {

@@ -30,6 +30,7 @@ public class EventPredicates {
   // TODO: unit tests
   public final static class NowEventsPredicate implements Predicate<Event> {
     private final LocalTime currentTime;
+    private final int EXTRA_MINUTES_TO_STICK_AROUND = 30;
 
     public NowEventsPredicate(LocalTime currentTime) {
       this.currentTime = currentTime;
@@ -39,7 +40,7 @@ public class EventPredicates {
       LocalTime eventStartTime = event.getStartTime();
       Interval interval = new Interval(eventStartTime.toDateTimeToday(),
           eventStartTime.toDateTimeToday().plusMinutes(event.getPermittedTime().toStandardMinutes()
-              .getMinutes()));
+              .getMinutes() + EXTRA_MINUTES_TO_STICK_AROUND));
       return interval.contains(currentTime.toDateTimeToday());
     }
   }

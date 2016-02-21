@@ -207,7 +207,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
     if (timeToDo.isBefore(DateTime.now())) {
       Log.i(TAG,
           String.format(
-              "Time to do is in past %s",
+              "Time to fire notification is in past %s",
               timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
       Log.i(TAG, "Cancel alarm for event id " + (int) e.getId());
       mAlarmManager.cancel(pendingIntent);
@@ -230,7 +230,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
     LocalTime currentTime = new LocalTime();
 
     items.add(new SectionItem("Uncompleted"));
-    List<Event> nowEvents = getYetToCompleteEvents(todayEvents, currentTime);
+    List<Event> nowEvents = getUncompletedEvents(todayEvents, currentTime);
     Collections.sort(nowEvents, new Event.StartTimeComparator());
     for (Event e : nowEvents) {
       items.add(new EntryItem(e));
@@ -250,13 +250,13 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener {
   }
 
   @VisibleForTesting
-  static List<Event> getYetToCompleteEvents(List<Event> todayEvents, LocalTime currentTime) {
+  static List<Event> getUncompletedEvents(List<Event> todayEvents, LocalTime currentTime) {
     List<Event> nowEvents = new ArrayList<Event>();
-    Predicate<Event> yetToCompleteEventsPredicate = Predicates
+    Predicate<Event> uncompletedEventsPredicate = Predicates
         .and(new EventPredicates.NowEventsPredicate(currentTime),
             new EventPredicates.IncompleteEventsPredicate());
     for (Event e : todayEvents) {
-      if (yetToCompleteEventsPredicate.apply(e)) {
+      if (uncompletedEventsPredicate.apply(e)) {
         nowEvents.add(e);
       }
     }

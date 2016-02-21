@@ -27,11 +27,12 @@ import siyugu.homework.event.Event;
 import siyugu.homework.event.EventDB;
 import siyugu.homework.event.ItemAdapter;
 import siyugu.homework.event.ItemAdapter.EntryItem;
+import siyugu.homework.event.ItemAdapter.EventToggleCompleteListener;
 import siyugu.homework.event.ItemAdapter.Item;
 import siyugu.homework.util.TimeUtil;
 
 // List all events for now
-public class CalendarFragment extends ListFragment implements FragmentVisibleListener {
+public class CalendarFragment extends ListFragment implements FragmentVisibleListener, EventToggleCompleteListener {
   private static final String TAG = "CalendarFragment";
   private EventDB eventDB;
 
@@ -141,7 +142,8 @@ public class CalendarFragment extends ListFragment implements FragmentVisibleLis
     ItemAdapter adapter = new ItemAdapter(getActivity(),
         R.layout.listview_item_event,
         R.layout.listview_header_event,
-        items);
+        items,
+        this);
     setListAdapter(adapter);
   }
 
@@ -170,5 +172,11 @@ public class CalendarFragment extends ListFragment implements FragmentVisibleLis
     }
 
     return eventsByDate;
+  }
+
+  public void eventToggleComplete(Event e) {
+    Log.i(TAG, e.getTitle() + " change completion status");
+    eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());
+    fillListView();
   }
 }

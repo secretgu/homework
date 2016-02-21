@@ -19,17 +19,20 @@ public class ItemAdapter extends ArrayAdapter<ItemAdapter.Item> {
   private final int entryLayoutResourceId;
   private final int sectionLayoutResourceId;
   private final List<Item> data;
+  private final EventToggleCompleteListener listener;
 
   public ItemAdapter(Context context,
                      int entryLayoutResourceId,
                      int sectionLayoutResourceId,
-                     List<Item> data) {
+                     List<Item> data,
+                     EventToggleCompleteListener listener) {
     super(context, 0, data);
 
     this.context = context;
     this.entryLayoutResourceId = entryLayoutResourceId;
     this.sectionLayoutResourceId = sectionLayoutResourceId;
     this.data = data;
+    this.listener = listener;
   }
 
   @Override
@@ -61,10 +64,16 @@ public class ItemAdapter extends ArrayAdapter<ItemAdapter.Item> {
     TextView mStartTimeText = (TextView) view.findViewById(R.id.start_time_text_item);
     TextView mTimePermittedText = (TextView) view.findViewById(R.id.time_permitted_text_item);
 
-    Event e = item.getEvent();
+    final Event e = item.getEvent();
     mEventTypeText.setText(e.getTypeOfWork().toString());
     mTitleText.setText(e.getTitle());
     mTitleText.setChecked(e.getCompleted());
+    mTitleText.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        listener.eventToggleComplete(e);
+      }
+    });
     mTimePermittedText.setText(
         String.format("%d hr %d min",
             e.getPermittedTime().getHours(),
@@ -109,5 +118,9 @@ public class ItemAdapter extends ArrayAdapter<ItemAdapter.Item> {
     public boolean isSection() {
       return false;
     }
+  }
+
+  public interface EventToggleCompleteListener {
+    void eventToggleComplete(Event e);
   }
 }

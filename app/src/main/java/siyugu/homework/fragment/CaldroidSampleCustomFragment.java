@@ -23,7 +23,6 @@ public class CaldroidSampleCustomFragment extends CaldroidFragment {
         getCaldroidData(), extraData);
   }
 
-
   public static class CaldroidSampleCustomAdapter extends CaldroidGridAdapter {
 
     public CaldroidSampleCustomAdapter(Context context, int month, int year,

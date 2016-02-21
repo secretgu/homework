@@ -7,14 +7,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
 import java.io.File;
 import java.io.IOException;
 
 import siyugu.homework.R;
 import siyugu.homework.event.EventDB;
-import siyugu.homework.fragment.CalendarFragment;
+import siyugu.homework.fragment.CalendarFragmentV2;
 import siyugu.homework.fragment.FragmentVisibleListener;
 import siyugu.homework.fragment.ReferenceFragment;
 import siyugu.homework.fragment.SimplePagerAdapter;
@@ -36,7 +35,7 @@ public class HomeScreen extends AppCompatActivity {
     final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
     final SimplePagerAdapter adapter = new SimplePagerAdapter(getSupportFragmentManager());
     adapter.addFragment(new TodayFragment(), "Today");
-    adapter.addFragment(new CalendarFragment(), "Calendar");
+    adapter.addFragment(new CalendarFragmentV2(), "Calendar");
     adapter.addFragment(new ReferenceFragment(), "Reference");
     viewPager.setAdapter(adapter);
 

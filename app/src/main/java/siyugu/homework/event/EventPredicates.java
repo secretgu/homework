@@ -26,8 +26,6 @@ public class EventPredicates {
   //
   // The goal is to make sure mutual exclusiveness instead of absolute precise of where an event
   // should go at a certain time.
-  //
-  // TODO: unit tests
   public final static class NowEventsPredicate implements Predicate<Event> {
     private final LocalTime currentTime;
     private final int EXTRA_MINUTES_TO_STICK_AROUND = 30;

@@ -382,7 +382,6 @@ public class EditModeActivity extends AppCompatActivity {
     if (Strings.isNullOrEmpty(mDoDateText.getText().toString())) {
       return "Must specify do date";
     }
-    // TODO: this has to be modularized.
     return null;
   }
 }

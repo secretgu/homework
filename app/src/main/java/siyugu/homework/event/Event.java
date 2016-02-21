@@ -32,7 +32,6 @@ public class Event implements Serializable {
   private WarningTime warningTime;
   private boolean completed;
 
-  // TODO: looks error-prone. Might switch to allow setters for Event.
   private long id;  // unique id in entire EventDB
 
   private static long lastId = 0;

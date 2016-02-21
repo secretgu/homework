@@ -45,7 +45,6 @@ public class CalendarFragment extends ListFragment implements FragmentVisibleLis
       }
     }
     eventDB = ((HomeScreen) getActivity()).getEventDB();
-    fillListView();
   }
 
   @Override

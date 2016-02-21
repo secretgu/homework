@@ -10,11 +10,17 @@ import org.joda.time.LocalTime;
 
 public class EventPredicates {
   public final static class TodayEventsPredicate implements Predicate<Event> {
+    private LocalDate date;
+
+    public TodayEventsPredicate(LocalDate date) {
+      this.date = date;
+    }
+
     public boolean apply(Event event) {
       if (event.getDoDate() == null) {
         return false;
       }
-      return Days.daysBetween(new LocalDate(), event.getDoDate()) == Days.ZERO;
+      return Days.daysBetween(date, event.getDoDate()) == Days.ZERO;
     }
   }
 

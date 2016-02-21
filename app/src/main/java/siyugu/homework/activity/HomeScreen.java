@@ -11,8 +11,10 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.R;
 import siyugu.homework.event.EventDB;
+import siyugu.homework.fragment.CalendarFragment;
 import siyugu.homework.fragment.CalendarFragmentV2;
 import siyugu.homework.fragment.FragmentVisibleListener;
 import siyugu.homework.fragment.ReferenceFragment;
@@ -35,8 +37,12 @@ public class HomeScreen extends AppCompatActivity {
     final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
     final SimplePagerAdapter adapter = new SimplePagerAdapter(getSupportFragmentManager());
     adapter.addFragment(new TodayFragment(), "Today");
-    adapter.addFragment(new CalendarFragmentV2(), "Calendar");
+    adapter.addFragment(new CalendarFragmentV2(), "CalendarV2");
     adapter.addFragment(new ReferenceFragment(), "Reference");
+    if (BuildConfig.DEBUG) {
+      // TODO: delete CalendarFragment when V2 is done.
+      adapter.addFragment(new CalendarFragment(), "Calendar");
+    }
     viewPager.setAdapter(adapter);
 
     TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);

@@ -22,6 +22,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
@@ -223,7 +224,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
   //--------------------------Fill in event list--------------------------
   private void fillListView() {
     List<Item> items = new ArrayList<Item>();
-    List<Event> todayEvents = eventDB.getTodayEvents();
+    List<Event> todayEvents = eventDB.getEventsOfDate(LocalDate.now());
     LocalTime currentTime = new LocalTime();
 
     items.add(new SectionItem("Uncompleted"));

@@ -5,6 +5,8 @@ import android.util.Log;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
+import org.joda.time.LocalDate;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -84,15 +86,15 @@ public class EventDB {
     }
   }
 
-  public List<Event> getTodayEvents() {
+  public List<Event> getEventsOfDate(LocalDate date) {
     List<Event> todayEvents = new ArrayList<Event>();
-    Predicate<Event> predicate = new EventPredicates.TodayEventsPredicate();
+    Predicate<Event> predicate = new EventPredicates.TodayEventsPredicate(date);
     for (Event e : allEvents) {
       if (predicate.apply(e)) {
         todayEvents.add(e);
       }
     }
-    return ImmutableList.copyOf(todayEvents);
+    return todayEvents;
   }
 
   public List<Event> getAllEvents() {

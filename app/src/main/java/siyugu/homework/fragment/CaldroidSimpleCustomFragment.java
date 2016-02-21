@@ -16,7 +16,7 @@ import java.util.Map;
 import hirondelle.date4j.DateTime;
 import siyugu.homework.R;
 
-public class CaldroidSampleCustomFragment extends CaldroidFragment {
+public class CaldroidSimpleCustomFragment extends CaldroidFragment {
   @Override
   public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
     return new CaldroidSampleCustomAdapter(getActivity(), month, year,
@@ -47,10 +47,9 @@ public class CaldroidSampleCustomFragment extends CaldroidFragment {
       int bottomPadding = cellView.getPaddingBottom();
       int rightPadding = cellView.getPaddingRight();
 
-      TextView tv1 = (TextView) cellView.findViewById(R.id.tv1);
-      TextView tv2 = (TextView) cellView.findViewById(R.id.tv2);
+      TextView dateInMonth = (TextView) cellView.findViewById(R.id.day_in_month_text);
 
-      tv1.setTextColor(Color.BLACK);
+      dateInMonth.setTextColor(Color.BLACK);
 
       // Get dateTime of this cell
       DateTime dateTime = this.datetimeList.get(position);
@@ -58,45 +57,23 @@ public class CaldroidSampleCustomFragment extends CaldroidFragment {
 
       // Set color of the dates in previous / next month
       if (dateTime.getMonth() != month) {
-        tv1.setTextColor(resources
+        dateInMonth.setTextColor(resources
             .getColor(com.caldroid.R.color.caldroid_darker_gray));
       }
 
-      boolean shouldResetDiabledView = false;
       boolean shouldResetSelectedView = false;
-
-      // Customize for disabled dates and date outside min/max dates
-      if ((minDateTime != null && dateTime.lt(minDateTime))
-          || (maxDateTime != null && dateTime.gt(maxDateTime))
-          || (disableDates != null && disableDates.indexOf(dateTime) != -1)) {
-
-        tv1.setTextColor(CaldroidFragment.disabledTextColor);
-        if (CaldroidFragment.disabledBackgroundDrawable == -1) {
-          cellView.setBackgroundResource(com.caldroid.R.drawable.disable_cell);
-        } else {
-          cellView.setBackgroundResource(CaldroidFragment.disabledBackgroundDrawable);
-        }
-
-        if (dateTime.equals(getToday())) {
-          cellView.setBackgroundResource(com.caldroid.R.drawable.red_border_gray_bg);
-        }
-
-      } else {
-        shouldResetDiabledView = true;
-      }
 
       // Customize for selected dates
       if (selectedDates != null && selectedDates.indexOf(dateTime) != -1) {
         cellView.setBackgroundColor(resources
             .getColor(com.caldroid.R.color.caldroid_sky_blue));
 
-        tv1.setTextColor(Color.BLACK);
-
+        dateInMonth.setTextColor(Color.BLACK);
       } else {
         shouldResetSelectedView = true;
       }
 
-      if (shouldResetDiabledView && shouldResetSelectedView) {
+      if (shouldResetSelectedView) {
         // Customize for today
         if (dateTime.equals(getToday())) {
           cellView.setBackgroundResource(com.caldroid.R.drawable.red_border);
@@ -105,8 +82,7 @@ public class CaldroidSampleCustomFragment extends CaldroidFragment {
         }
       }
 
-      tv1.setText("" + dateTime.getDay());
-      tv2.setText("Hi");
+      dateInMonth.setText(String.valueOf(dateTime.getDay()));
 
       // Somehow after setBackgroundResource, the padding collapse.
       // This is to recover the padding
@@ -114,7 +90,7 @@ public class CaldroidSampleCustomFragment extends CaldroidFragment {
           bottomPadding);
 
       // Set custom color if required
-      setCustomResources(dateTime, cellView, tv1);
+      setCustomResources(dateTime, cellView, dateInMonth);
 
       return cellView;
     }

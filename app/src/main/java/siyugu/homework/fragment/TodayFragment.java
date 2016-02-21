@@ -276,6 +276,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
     return upcomingIncompleteEvents;
   }
 
+  @Override
   public void eventToggleComplete(Event e) {
     Log.i(TAG, e.getTitle() + " change completion status");
     eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());

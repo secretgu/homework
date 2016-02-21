@@ -155,11 +155,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
     builder.setItems(items, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int item) {
-        if (items[item].equals(getResources().getString(R.string.mark_as_completed_menuitem))) {
-          Log.i(TAG, e.getTitle() + " change completion status");
-          eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());
-          fillListView();
-        } else if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
+        if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
           Log.i(TAG, e.getTitle() + " selected to be modified");
           Intent intent = new Intent(getActivity(), EditModeActivity.class);
           intent.putExtra(EDIT_EVENT_EXTRA, e);

@@ -34,11 +34,9 @@
     <string name="upcoming_header_text">Upcoming</string>
 
     <string name="modify_event_menu_title">Modify Event</string>
-    <string name="mark_as_completed_menuitem">Toggle completion</string>
     <string name="modify_event_menuitem">Modify event</string>
 
     <string-array name="event_longclick_menus">
-        <item>@string/mark_as_completed_menuitem</item>
         <item>@string/modify_event_menuitem</item>
         <item>@string/cancel_menuitem</item>
     </string-array>

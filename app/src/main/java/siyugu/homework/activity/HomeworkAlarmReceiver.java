@@ -14,6 +14,7 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.event.Event;
 import siyugu.homework.fragment.TodayFragment;
 
@@ -22,7 +23,9 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.i(TAG, "Receive broadcast");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, "Receive broadcast");
+    }
     if (!intent.hasExtra(TodayFragment.ALARM_EVENT_EXTRA)) {
       return;
     }
@@ -30,8 +33,10 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
     Event e = (Event) intent.getSerializableExtra(TodayFragment.ALARM_EVENT_EXTRA);
     int minuteToStart = e.getWarningTime().getMinute();
     Duration timeLeft = new Duration(DateTime.now(), e.getDoDate().toDateTime(e.getStartTime()));
-    Log.d(TAG, String.format(
-        "warning ahead: %d, time left: %d", minuteToStart, (int) timeLeft.getStandardMinutes()));
+    if (BuildConfig.DEBUG) {
+      Log.d(TAG, String.format(
+          "warning ahead: %d, time left: %d", minuteToStart, (int) timeLeft.getStandardMinutes()));
+    }
     minuteToStart = Math.min(minuteToStart, (int) timeLeft.getStandardMinutes());
     String notifyText;
     if (minuteToStart == 0) {
@@ -64,7 +69,9 @@ public class HomeworkAlarmReceiver extends BroadcastReceiver {
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     boolean isScreenOn = pm.isScreenOn();
 
-    Log.i(TAG, "screen on: " + isScreenOn);
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, "screen on: " + isScreenOn);
+    }
 
     if (isScreenOn == false) {
 

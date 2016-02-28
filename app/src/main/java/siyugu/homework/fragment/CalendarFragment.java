@@ -111,7 +111,9 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
     mDateEventListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
       @Override
       public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i(TAG, "long click");
+        if (BuildConfig.DEBUG) {
+          Log.i(TAG, "long click");
+        }
         ItemAdapter.Item item = (ItemAdapter.Item) parent.getAdapter().getItem(position);
         if (item.isSection()) {
           // nothing needs to be done
@@ -125,7 +127,9 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
     mDateEventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i(TAG, "normal click");
+        if (BuildConfig.DEBUG) {
+          Log.i(TAG, "normal click");
+        }
         ItemAdapter.Item item = (ItemAdapter.Item) parent.getAdapter().getItem(position);
         if (item.isSection()) {
           // nothing needs to be done
@@ -147,7 +151,9 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
   }
 
   private void updateSelectedDates() {
-    Log.i(TAG, "updateSelectedDates");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, "updateSelectedDates");
+    }
     List<Event> allEvents = eventDB.getAllEvents();
     Set<LocalDate> datesHaveEvents = new HashSet<>();
     for (Event e : allEvents) {
@@ -179,19 +185,22 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
 
   @Override
   public void eventToggleComplete(Event e) {
-    Log.i(TAG, e.getTitle() + " change completion status");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, e.getTitle() + " change completion status");
+    }
     eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());
     updateEventList(e.getDoDate());
   }
 
   @Override
   public void fragmentBecameVisible() {
-    Log.i(TAG, "become visible");
     updateSelectedDates();
   }
 
   public void eventClick(final Event e) {
-    Log.i(TAG, e.getTitle() + " selected to be viewed");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, e.getTitle() + " selected to be viewed");
+    }
     Intent intent = new Intent(getActivity(), EditModeActivity.class);
     intent.putExtra(TodayFragment.VIEW_EVENT_EXTRA, e);
     startActivity(intent);
@@ -206,7 +215,9 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
       @Override
       public void onClick(DialogInterface dialog, int item) {
         if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
-          Log.i(TAG, e.getTitle() + " selected to be modified");
+          if (BuildConfig.DEBUG) {
+            Log.i(TAG, e.getTitle() + " selected to be modified");
+          }
           Intent intent = new Intent(getActivity(), EditModeActivity.class);
           intent.putExtra(TodayFragment.EDIT_EVENT_EXTRA, e);
           startActivityForResult(intent, TodayFragment.NEW_EVENT_REQUEST);
@@ -244,18 +255,22 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
     DateTime timeToDo = e.getDoDate().toDateTime(e.getStartTime());
     DateTime timeToFire = timeToDo.minusMinutes(e.getWarningTime().getMinute());
     if (timeToDo.isBefore(DateTime.now())) {
-      Log.i(TAG,
-          String.format(
-              "Time to fire notification is in past %s",
-              timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
-      Log.i(TAG, "Cancel alarm for event id " + (int) e.getId());
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG,
+            String.format(
+                "Time to fire notification is in past %s",
+                timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+        Log.i(TAG, "Cancel alarm for event id " + (int) e.getId());
+      }
       mAlarmManager.cancel(pendingIntent);
       return;
     }
-    Log.i(TAG,
-        String.format("Alarm for event id %d schedule at %s",
-            e.getId(),
-            timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG,
+          String.format("Alarm for event id %d schedule at %s",
+              e.getId(),
+              timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+    }
     timeToFire.minusMinutes(e.getWarningTime().getMinute());
     mAlarmManager.set(AlarmManager.RTC_WAKEUP,
         timeToFire.toInstant().getMillis(),

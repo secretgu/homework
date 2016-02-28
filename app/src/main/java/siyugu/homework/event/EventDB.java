@@ -48,7 +48,9 @@ public class EventDB {
       // Invariant: lastId == max(Event#id in allEvents) or 0 if allEvents is empty
       Event.setLastId(lastId);
       in.close();
-      Log.i(TAG, "Deserialized data from " + backupFile.getAbsolutePath());
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG, "Deserialized data from " + backupFile.getAbsolutePath());
+      }
     } else {
       allEvents = new ArrayList<Event>();
     }
@@ -60,14 +62,18 @@ public class EventDB {
     boolean found = false;
     for (Event event : allEvents) {
       if (event.getId() == e.getId()) {
-        Log.i(TAG, "replace existing event " + e.getId());
+        if (BuildConfig.DEBUG) {
+          Log.i(TAG, "replace existing event " + e.getId());
+        }
         event.copyFrom(e);
         found = true;
         break;
       }
     }
     if (!found) {
-      Log.i(TAG, "add new event " + e.getId() + ": " + e.getDescription());
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG, "add new event " + e.getId() + ": " + e.getDescription());
+      }
       allEvents.add(e);
     }
   }
@@ -79,10 +85,14 @@ public class EventDB {
       oos.writeLong(Event.peekLastId());
       oos.flush();
       oos.close();
-      Log.i(TAG, "Serialized data is saved in " + backupFile.getAbsolutePath());
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG, "Serialized data is saved in " + backupFile.getAbsolutePath());
+      }
       flushed = true;
     } else {
-      Log.i(TAG, "Nothing new to persist");
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG, "Nothing new to persist");
+      }
     }
   }
 

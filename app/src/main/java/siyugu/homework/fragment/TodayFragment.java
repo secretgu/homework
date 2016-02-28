@@ -85,7 +85,9 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
     mTodayEventsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
       @Override
       public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i(TAG, "long click");
+        if (BuildConfig.DEBUG) {
+          Log.i(TAG, "long click");
+        }
         Item item = (Item) mTodayEventsListView.getAdapter().getItem(position);
         if (item.isSection()) {
           // nothing needs to be done
@@ -99,7 +101,9 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
     mTodayEventsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i(TAG, "normal click");
+        if (BuildConfig.DEBUG) {
+          Log.i(TAG, "normal click");
+        }
         Item item = (Item) mTodayEventsListView.getAdapter().getItem(position);
         if (item.isSection()) {
           // nothing needs to be done
@@ -129,20 +133,23 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
 
   @Override
   public void onResume() {
-    Log.i(TAG, "onResume");
     super.onResume();
     fillListView();
   }
 
   @Override
   public void fragmentBecameVisible() {
-    Log.i(TAG, "become visible");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, "become visible");
+    }
     // not efficient, but for a toy app...
     fillListView();
   }
 
   public void eventClick(final Event e) {
-    Log.i(TAG, e.getTitle() + " selected to be viewed");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, e.getTitle() + " selected to be viewed");
+    }
     Intent intent = new Intent(getActivity(), EditModeActivity.class);
     intent.putExtra(VIEW_EVENT_EXTRA, e);
     startActivity(intent);
@@ -157,7 +164,9 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
       @Override
       public void onClick(DialogInterface dialog, int item) {
         if (items[item].equals(getResources().getString(R.string.modify_event_menuitem))) {
-          Log.i(TAG, e.getTitle() + " selected to be modified");
+          if (BuildConfig.DEBUG) {
+            Log.i(TAG, e.getTitle() + " selected to be modified");
+          }
           Intent intent = new Intent(getActivity(), EditModeActivity.class);
           intent.putExtra(EDIT_EVENT_EXTRA, e);
           startActivityForResult(intent, NEW_EVENT_REQUEST);
@@ -203,18 +212,22 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
     DateTime timeToDo = e.getDoDate().toDateTime(e.getStartTime());
     DateTime timeToFire = timeToDo.minusMinutes(e.getWarningTime().getMinute());
     if (timeToDo.isBefore(DateTime.now())) {
-      Log.i(TAG,
-          String.format(
-              "Time to fire notification is in past %s",
-              timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
-      Log.i(TAG, "Cancel alarm for event id " + (int) e.getId());
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG,
+            String.format(
+                "Time to fire notification is in past %s",
+                timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+        Log.i(TAG, "Cancel alarm for event id " + (int) e.getId());
+      }
       mAlarmManager.cancel(pendingIntent);
       return;
     }
-    Log.i(TAG,
-        String.format("Alarm for event id %d schedule at %s",
-            e.getId(),
-            timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG,
+          String.format("Alarm for event id %d schedule at %s",
+              e.getId(),
+              timeToFire.toString(TimeUtil.DATETIME_DEBUG_PATTERN)));
+    }
     timeToFire.minusMinutes(e.getWarningTime().getMinute());
     mAlarmManager.set(AlarmManager.RTC_WAKEUP,
         timeToFire.toInstant().getMillis(),
@@ -278,7 +291,9 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
 
   @Override
   public void eventToggleComplete(Event e) {
-    Log.i(TAG, e.getTitle() + " change completion status");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, e.getTitle() + " change completion status");
+    }
     eventDB.addEvent(e.toBuilder().setCompleted(!e.getCompleted()).build());
     fillListView();
   }

@@ -11,6 +11,7 @@ import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.R;
 
 public class ReferenceFragment extends ListFragment {
@@ -39,7 +40,9 @@ public class ReferenceFragment extends ListFragment {
     if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
       startActivity(browserIntent);
     } else {
-      Log.i(TAG, "intent to open url in browser can not be handled");
+      if (BuildConfig.DEBUG) {
+        Log.i(TAG, "intent to open url in browser can not be handled");
+      }
     }
   }
 }

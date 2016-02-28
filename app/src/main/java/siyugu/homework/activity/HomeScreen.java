@@ -11,6 +11,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.R;
 import siyugu.homework.event.EventDB;
 import siyugu.homework.fragment.CalendarFragment;
@@ -45,7 +46,9 @@ public class HomeScreen extends AppCompatActivity {
     try {
       eventDB = new EventDB(getEventsFilePath());
     } catch (Exception e) {
-      Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
+      if (BuildConfig.DEBUG) {
+        Log.e(TAG, "FATAL: not able to load " + EVENTS_FILE_PATH);
+      }
       throw new RuntimeException(e);
     }
 
@@ -70,11 +73,15 @@ public class HomeScreen extends AppCompatActivity {
 
   @Override
   public void onStop() {
-    Log.i(TAG, "onStop");
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, "onStop");
+    }
     try {
       eventDB.flush();
     } catch (IOException e) {
-      Log.e(TAG, "FATAL: not able to save data to " + EVENTS_FILE_PATH);
+      if (BuildConfig.DEBUG) {
+        Log.e(TAG, "FATAL: not able to save data to " + EVENTS_FILE_PATH);
+      }
       throw new RuntimeException(e);
     }
     super.onStop();
@@ -82,7 +89,9 @@ public class HomeScreen extends AppCompatActivity {
 
   private File getEventsFilePath() {
     File eventsFile = new File(getFilesDir(), EVENTS_FILE_PATH);
-    Log.i(TAG, eventsFile.getAbsolutePath());
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, eventsFile.getAbsolutePath());
+    }
     return eventsFile;
   }
 

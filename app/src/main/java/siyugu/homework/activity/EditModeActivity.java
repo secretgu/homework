@@ -35,6 +35,7 @@ import org.joda.time.Period;
 import java.io.File;
 import java.io.IOException;
 
+import siyugu.homework.BuildConfig;
 import siyugu.homework.R;
 import siyugu.homework.event.Event;
 import siyugu.homework.fragment.DatePickerFragment;
@@ -200,7 +201,9 @@ public class EditModeActivity extends AppCompatActivity {
               photoFile = createImageFile();
             } catch (IOException ex) {
               // Error occurred while creating the File
-              Log.e(TAG, "Error occurred while creating the File", ex);
+              if (BuildConfig.DEBUG) {
+                Log.e(TAG, "Error occurred while creating the File", ex);
+              }
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -251,14 +254,18 @@ public class EditModeActivity extends AppCompatActivity {
   }
 
   private void onCaptureImageResult(Intent data) {
-    Log.d(TAG, "photo saved to: " + mCurrentPhotoPath);
+    if (BuildConfig.DEBUG) {
+      Log.d(TAG, "photo saved to: " + mCurrentPhotoPath);
+    }
 
     MediaScannerConnection.scanFile(this,
         new String[]{mCurrentPhotoPath}, null,
         new MediaScannerConnection.OnScanCompletedListener() {
           public void onScanCompleted(String path, Uri uri) {
-            Log.i("ExternalStorage", "Scanned " + path + ":");
-            Log.i("ExternalStorage", "-> uri=" + uri);
+            if (BuildConfig.DEBUG) {
+              Log.i("ExternalStorage", "Scanned " + path + ":");
+              Log.i("ExternalStorage", "-> uri=" + uri);
+            }
           }
         });
     showImage();
@@ -278,14 +285,18 @@ public class EditModeActivity extends AppCompatActivity {
     cursor.moveToFirst();
 
     mCurrentPhotoPath = cursor.getString(column_index);
-    Log.d(TAG, "photo selected: " + mCurrentPhotoPath);
+    if (BuildConfig.DEBUG) {
+      Log.d(TAG, "photo selected: " + mCurrentPhotoPath);
+    }
 
     showImage();
   }
 
   private void showImage() {
     if (mCurrentPhotoPath == null) {
-      Log.e(TAG, "no photo chosen");
+      if (BuildConfig.DEBUG) {
+        Log.e(TAG, "no photo chosen");
+      }
       return;
     }
 
@@ -314,12 +325,16 @@ public class EditModeActivity extends AppCompatActivity {
         break;
       }
       default: {
-        Log.e(TAG, "unknown view id");
+        if (BuildConfig.DEBUG) {
+          Log.e(TAG, "unknown view id");
+        }
         break;
       }
     }
     if (newFragment == null) {
-      Log.e(TAG, "failed to create a new fragment");
+      if (BuildConfig.DEBUG) {
+        Log.e(TAG, "failed to create a new fragment");
+      }
       return;
     }
     newFragment.setArguments(fragmentData);

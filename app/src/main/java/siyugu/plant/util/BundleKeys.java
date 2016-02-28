@@ -1,4 +1,4 @@
-package siyugu.homework.util;
+package siyugu.plant.util;
 
 public class BundleKeys {
   public static final String VIEW_ID_KEY = "VIEW_ID_KEY";

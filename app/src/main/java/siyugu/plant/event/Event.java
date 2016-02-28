@@ -1,4 +1,4 @@
-package siyugu.homework.event;
+package siyugu.plant.event;
 
 import android.support.annotation.Nullable;
 
@@ -11,8 +11,8 @@ import org.joda.time.Period;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import siyugu.homework.BuildConfig;
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.BuildConfig;
+import siyugu.plant.util.TimeUtil;
 
 /**
  * Event is immutable. Use Event#toBuilder to get a Builder object.

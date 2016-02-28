@@ -1,4 +1,4 @@
-package siyugu.homework.activity;
+package siyugu.plant.activity;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,9 +14,9 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import siyugu.homework.BuildConfig;
-import siyugu.homework.event.Event;
-import siyugu.homework.fragment.TodayFragment;
+import siyugu.plant.BuildConfig;
+import siyugu.plant.event.Event;
+import siyugu.plant.fragment.TodayFragment;
 
 public class HomeworkAlarmReceiver extends BroadcastReceiver {
   private static final String TAG = "HomeworkAlarmReceiver";

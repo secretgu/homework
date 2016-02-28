@@ -1,4 +1,4 @@
-package siyugu.homework.event;
+package siyugu.plant.event;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import siyugu.homework.R;
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.R;
+import siyugu.plant.util.TimeUtil;
 
 public class ItemAdapter extends ArrayAdapter<ItemAdapter.Item> {
   private final Context context;

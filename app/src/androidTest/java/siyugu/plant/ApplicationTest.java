@@ -1,4 +1,4 @@
-package siyugu.homework;
+package siyugu.plant;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

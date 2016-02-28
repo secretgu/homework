@@ -1,4 +1,4 @@
-package siyugu.homework.fragment;
+package siyugu.plant.fragment;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,7 +14,7 @@ import com.roomorama.caldroid.CaldroidGridAdapter;
 import java.util.Map;
 
 import hirondelle.date4j.DateTime;
-import siyugu.homework.R;
+import siyugu.plant.R;
 
 public class CaldroidSimpleCustomFragment extends CaldroidFragment {
   @Override

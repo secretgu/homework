@@ -1,4 +1,4 @@
-package siyugu.homework.fragment;
+package siyugu.plant.fragment;
 
 
 import android.content.Intent;
@@ -11,8 +11,8 @@ import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import siyugu.homework.BuildConfig;
-import siyugu.homework.R;
+import siyugu.plant.BuildConfig;
+import siyugu.plant.R;
 
 public class ReferenceFragment extends ListFragment {
   private static final String TAG = "ReferenceFragment";

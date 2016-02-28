@@ -1,4 +1,4 @@
-package siyugu.homework.fragment;
+package siyugu.plant.fragment;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -30,16 +30,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import siyugu.homework.BuildConfig;
-import siyugu.homework.R;
-import siyugu.homework.activity.EditModeActivity;
-import siyugu.homework.activity.HomeScreen;
-import siyugu.homework.activity.HomeworkAlarmReceiver;
-import siyugu.homework.event.Event;
-import siyugu.homework.event.EventDB;
-import siyugu.homework.event.ItemAdapter;
-import siyugu.homework.event.ItemAdapter.EventToggleCompleteListener;
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.BuildConfig;
+import siyugu.plant.R;
+import siyugu.plant.activity.EditModeActivity;
+import siyugu.plant.activity.HomeScreen;
+import siyugu.plant.activity.HomeworkAlarmReceiver;
+import siyugu.plant.event.Event;
+import siyugu.plant.event.EventDB;
+import siyugu.plant.event.ItemAdapter;
+import siyugu.plant.event.ItemAdapter.EventToggleCompleteListener;
+import siyugu.plant.util.TimeUtil;
 
 public class CalendarFragment extends Fragment implements FragmentVisibleListener, EventToggleCompleteListener {
   private static final String TAG = "CalendarFragment";

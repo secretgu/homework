@@ -1,4 +1,4 @@
-package siyugu.homework.activity;
+package siyugu.plant.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -11,14 +11,14 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
-import siyugu.homework.BuildConfig;
-import siyugu.homework.R;
-import siyugu.homework.event.EventDB;
-import siyugu.homework.fragment.CalendarFragment;
-import siyugu.homework.fragment.FragmentVisibleListener;
-import siyugu.homework.fragment.ReferenceFragment;
-import siyugu.homework.fragment.SimplePagerAdapter;
-import siyugu.homework.fragment.TodayFragment;
+import siyugu.plant.BuildConfig;
+import siyugu.plant.R;
+import siyugu.plant.event.EventDB;
+import siyugu.plant.fragment.CalendarFragment;
+import siyugu.plant.fragment.FragmentVisibleListener;
+import siyugu.plant.fragment.ReferenceFragment;
+import siyugu.plant.fragment.SimplePagerAdapter;
+import siyugu.plant.fragment.TodayFragment;
 
 public class HomeScreen extends AppCompatActivity {
   private static final String TAG = "HomeScreen";

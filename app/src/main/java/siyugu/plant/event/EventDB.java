@@ -1,4 +1,4 @@
-package siyugu.homework.event;
+package siyugu.plant.event;
 
 import android.util.Log;
 
@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import siyugu.homework.BuildConfig;
+import siyugu.plant.BuildConfig;
 
 public class EventDB {
   private static final String TAG = "EventDB";

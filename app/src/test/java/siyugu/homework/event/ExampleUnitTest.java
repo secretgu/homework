@@ -1,16 +1,12 @@
-package siyugu.homework.event;
+package siyugu.plant.event;
 
 import org.joda.time.Duration;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.util.TimeUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package siyugu.homework.fragment;
+package siyugu.plant.fragment;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -10,8 +10,8 @@ import android.widget.TimePicker;
 
 import org.joda.time.LocalTime;
 
-import siyugu.homework.util.BundleKeys;
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.util.BundleKeys;
+import siyugu.plant.util.TimeUtil;
 
 public class TimePickerFragment extends DialogFragment
     implements TimePickerDialog.OnTimeSetListener {

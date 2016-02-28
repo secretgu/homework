@@ -1,4 +1,4 @@
-package siyugu.homework.fragment;
+package siyugu.plant.fragment;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -9,8 +9,8 @@ import android.widget.EditText;
 
 import org.joda.time.LocalDate;
 
-import siyugu.homework.util.BundleKeys;
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.util.BundleKeys;
+import siyugu.plant.util.TimeUtil;
 
 public class DatePickerFragment extends DialogFragment
     implements DatePickerDialog.OnDateSetListener {

@@ -1,4 +1,4 @@
-package siyugu.homework.activity;
+package siyugu.plant.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,14 +35,14 @@ import org.joda.time.Period;
 import java.io.File;
 import java.io.IOException;
 
-import siyugu.homework.BuildConfig;
-import siyugu.homework.R;
-import siyugu.homework.event.Event;
-import siyugu.homework.fragment.DatePickerFragment;
-import siyugu.homework.fragment.TimePickerFragment;
-import siyugu.homework.fragment.TodayFragment;
-import siyugu.homework.util.BundleKeys;
-import siyugu.homework.util.TimeUtil;
+import siyugu.plant.BuildConfig;
+import siyugu.plant.R;
+import siyugu.plant.event.Event;
+import siyugu.plant.fragment.DatePickerFragment;
+import siyugu.plant.fragment.TimePickerFragment;
+import siyugu.plant.fragment.TodayFragment;
+import siyugu.plant.util.BundleKeys;
+import siyugu.plant.util.TimeUtil;
 
 public class EditModeActivity extends AppCompatActivity {
   private static final String TAG = "EditModeActivity";

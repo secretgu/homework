@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Homework</string>
+    <string name="app_name">PlanT</string>
 
     <!--Editting Mode Text-->
     <string name="title_required">Title*</string>

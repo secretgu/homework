@@ -43,17 +43,5 @@
 
     <string name="set">Set</string>
 
-    <string-array name="reference_links_name">
-        <item>Homestead High School: Home Page</item>
-        <item>School Loop</item>
-        <item>Final Grade Calculator: RogerHub</item>
-        <item>Slader</item>
-    </string-array>
-
-    <string-array name="reference_links_value">
-        <item>http://www.hhs.fuhsd.org</item>
-        <item>https://homestead.schoolloop.com/portal/login?d=x&amp;return_url=1455934104872</item>
-        <item>https://rogerhub.com/final-grade-calculator/</item>
-        <item>https://www.slader.com</item>
-    </string-array>
+    <string name="school">School:</string>
 </resources>

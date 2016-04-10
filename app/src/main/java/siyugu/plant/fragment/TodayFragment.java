@@ -50,6 +50,7 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
 
   public final static String NEW_EVENT_EXTRA = "NEW_EVENT_EXTRA";
   public final static String EDIT_EVENT_EXTRA = "EDIT_EVENT_EXTRA";
+  public final static String DUPLICATE_EVENT_EXTRA = "DUPLICATE_EVENT_EXTRA";
   public final static String VIEW_EVENT_EXTRA = "VIEW_EVENT_EXTRA";
   public final static String ALARM_EVENT_EXTRA = "ALARM_EVENT_EXTRA";
 
@@ -169,6 +170,13 @@ public class TodayFragment extends Fragment implements FragmentVisibleListener, 
           }
           Intent intent = new Intent(getActivity(), EditModeActivity.class);
           intent.putExtra(EDIT_EVENT_EXTRA, e);
+          startActivityForResult(intent, NEW_EVENT_REQUEST);
+        } else if (items[item].equals(getResources().getString(R.string.duplicate_event_menuitem))) {
+          if (BuildConfig.DEBUG) {
+            Log.i(TAG, e.getTitle() + " selected to be duplicated");
+          }
+          Intent intent = new Intent(getActivity(), EditModeActivity.class);
+          intent.putExtra(DUPLICATE_EVENT_EXTRA, e);
           startActivityForResult(intent, NEW_EVENT_REQUEST);
         } else if (items[item].equals(getResources().getString(R.string.cancel_menuitem))) {
           dialog.dismiss();

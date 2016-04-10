@@ -221,6 +221,13 @@ public class CalendarFragment extends Fragment implements FragmentVisibleListene
           Intent intent = new Intent(getActivity(), EditModeActivity.class);
           intent.putExtra(TodayFragment.EDIT_EVENT_EXTRA, e);
           startActivityForResult(intent, TodayFragment.NEW_EVENT_REQUEST);
+        } else if (items[item].equals(getResources().getString(R.string.duplicate_event_menuitem))) {
+          if (BuildConfig.DEBUG) {
+            Log.i(TAG, e.getTitle() + " selected to be duplicated");
+          }
+          Intent intent = new Intent(getActivity(), EditModeActivity.class);
+          intent.putExtra(TodayFragment.DUPLICATE_EVENT_EXTRA, e);
+          startActivityForResult(intent, TodayFragment.NEW_EVENT_REQUEST);
         } else if (items[item].equals(getResources().getString(R.string.cancel_menuitem))) {
           dialog.dismiss();
         }

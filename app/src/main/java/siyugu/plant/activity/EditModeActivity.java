@@ -84,6 +84,9 @@ public class EditModeActivity extends AppCompatActivity {
       mSubmitBtn.setText(R.string.save_modification_text);
       mEventEditting = (Event) intent.getSerializableExtra(TodayFragment.EDIT_EVENT_EXTRA);
       initializeUiValuesWithEvent(mEventEditting);
+    } else if (intent.hasExtra(TodayFragment.DUPLICATE_EVENT_EXTRA)) {
+      Event eventToDup = (Event) intent.getSerializableExtra(TodayFragment.DUPLICATE_EVENT_EXTRA);
+      initializeUiValuesWithEvent(eventToDup);
     } else if (intent.hasExtra(TodayFragment.VIEW_EVENT_EXTRA)) {
       Event eventViewing = (Event) intent.getSerializableExtra(TodayFragment.VIEW_EVENT_EXTRA);
       initializeUiValuesWithEvent(eventViewing);
